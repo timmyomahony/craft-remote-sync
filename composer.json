@@ -1,6 +1,6 @@
 {
     "name": "weareferal/remote-sync",
-    "description": "Sync your database and assets to a remote location",
+    "description": "Sync your database and assets across Craft environments",
     "type": "craft-plugin",
     "keywords": [
         "craft",

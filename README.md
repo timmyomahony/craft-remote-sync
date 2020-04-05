@@ -1,6 +1,6 @@
 # Craft Remote Sync plugin for Craft CMS 3.x
 
-Backup your database and assets to a remote destination like S3 easily through the Craft Control Panel and command line.
+Sync your database and assets across Craft environments easily through the Craft Control Panel and command line.
 
 ![Craft Remote Sync Logo](resources/img/plugin-logo.png)
 
@@ -17,7 +17,7 @@ To install the plugin, follow these instructions.
 2. Then tell Composer to load the plugin:
 
    ```sh
-   composer require weareferal/remote-backup
+   composer require weareferal/remote-sync
    ```
 
 3. In the Control Panel, go to Settings → Plugins and click the _Install_ button for Craft Remote Sync.
@@ -26,9 +26,15 @@ To install the plugin, follow these instructions.
 
 ![Craft Remote Sync Overview](resources/img/utilities-screenshot.png)
 
-Craft Remote Sync makes it easy to create offsite remote backups from the comfort of the Craft Control Panel. Along with a few CLI commands, this gives you the ability to take regular snapshots of your database and assets and rest assured that they are stored securely offsite.
+Craft Remote Sync makes it easy to sync your database and volume assets across a number of different environments from the comfort of the Craft Control Panel. This makes it much easier to move your site from local development to staging and onto production and avoids the need to regularly SSH into servers to perform database dumps and restores.
 
-It provides an easy-to-configure settings page as well as an interface in Craft's "utilties" section to create new remote database and volume backups.
+To do this, the plugin uses a remote "single source of truth" (currently a S3 bucket) to push and pull database and asset/volumes files to.
+
+![Craft Remote Sync Overview](README.assets/overview-6092824.png)
+
+For more information on the reasoning behind this approach see our blog post on the topic  ["Syncing your DB and assets across environments in Craft 3"](https://weareferal.com/tldr/syncing-your-db-and-assets-across-environments-in-craft-3/) or get in touch at [timmy@weareferal.com](mailto:timmy@weareferal.com)
+
+This plugin is inspired by [Andrew Welsch's `craft-scripts` library](https://github.com/nystudio107/craft-scripts) who also [has a great blog post on syncing you DB and assets in Craft](https://nystudio107.com/blog/database-asset-syncing-between-environments-in-craft-cms).
 
 ## Configuration
 
@@ -45,13 +51,6 @@ return [
         'cloudProvider' => 's3',
         //...
         'useQueue' => false,
-        'keepLocal' => false,
-        'prune' => true,
-        'pruneHourlyCount' => 6,
-        'pruneDailyCount' => 14,
-        'pruneWeeklyCount' => 4,
-        'pruneMonthlyCount' => 6,
-        'pruneYearlyCount' => 3,
     ],
     'dev' => [],
     'staging' => [],
@@ -67,7 +66,7 @@ Currently the only available provider is AWS S3 but more are to come soon (if yo
 
 #### AWS
 
-The details entered here correspond to your AWS S3 account and bucket that you want to use for backups. It's recommended to set up a new IAM user that has programmatic access (meaning via a acces/secret key) to a private S3 bucket.
+The details entered here correspond to your AWS S3 account and bucket that you want to use to sync files to. It's recommended to set up a new IAM user that has programmatic access (meaning via a access/secret key) to a private S3 bucket.
 
 Once you have set this bucket up, you can either enter your AWS S3 details directly into the setting page/config file, or you can use environment variables via your `.env` file (this is the recommended approach as seen in the screenshot above). This latter approach is more portable and secure as it prevents any private access/secret key values being included in files that you might commit to Github. Furthermore is means these variables can be reused in other plugins etc.
 
@@ -89,42 +88,37 @@ AWS_BUCKET_PREFIX="craft-backups/my-site"
 
 ![Craft Remote Sync Utilities Screenshot](resources/img/utilities-screenshot.png)
 
-You can view and create new remote backups via the Utilities section of the Craft Control Panel.
+From the "Remote Sync" tab in the utilities section you can:
+
+- **Push** your database: this will automatically dump the database on your server and send it to your remote provider
+- **Push** your volumes: this will automatically zip all configured volumes on your server and send them to your remote provider
+- **Pull** your database: this will download the chosen remote database file and restore it locally to your server
+- **Pull** your volumes: this will download the chosen remote volumes zip files and restore them all locally to your server
+- **Delete** you database/volumes: this will delete the chosen remote file
 
 ### Command Line
 
 There are also console commands available for creating, pushing and pulling backups:
 
 ```sh
-- remote-backup/database                    Manage remote database backups
-    remote-backup/database/create           Create a remote database backup
-    remote-backup/database/prune            Delete old remote database backups
+- remote-sync/database                      Manage remote databases
+    remote-sync/database/delete             Delete a remote database
+    remote-sync/database/list               List remote databases
+    remote-sync/database/pull               Pull remote database and restore it locally
+    remote-sync/database/push               Push local database to remote destination
 
-- remote-backup/volume                      Manage remote volume backups
-    remote-backup/volume/create             Create a remote database backup
-    remote-backup/volume/prune              Delete old remote volume backups
-```
-
-For example:
-
-```sh
-./craft remote-backup/database/create
-```
-
-These commands can be used alongside cron or your deployment scripts to automatically/periodically create backups.
-
-```cron
-0 * * * * /path/to/craft remote-backup/database/create
-5 * * * * /path/to/craft remote-backup/database/prune
+- remote-sync/volume                        Manage remote volumes
+    remote-sync/volume/delete               Delete a remote volume
+    remote-sync/volume/list                 List remote volumes
+    remote-sync/volume/pull                 Pull remote volume and restore it locally
+    remote-sync/volume/push                 Push local volume to remote destination
 ```
 
 ## Features
 
-![Pruning settings](resources/img/pruning-screenshot.png)
-
 ### Queue
 
-You can optionally use Craft's built-in queue to create new backups. This is useful when your backups are large and you don't want to have to wait on the Control Panel interface every time you backup. Instead, the backups will be pushed to the queue and completed in the background.
+You can optionally use Craft's built-in queue to sync files. This is useful when they are large and you don't want to have to wait on the Control Panel interface every time you backup. Instead, the files will be added to the queue and completed in the background.
 
 You can enable this via the "Use Queue" lightswitch in the settings or via the `userQueue` settig in your config.
 
@@ -134,11 +128,7 @@ The CLI commands ignore the queue setting. In other words, they will always run 
 
 ## Functionality
 
-Database backups are created in a similar manner to the native Craft backup utility. In fact, the plugin uses this script behind-the-scenes, it just uses a slightly different naming scheme.
-
-For volume assets backups, we simply create a versioned zip file containing the handles of all volume assets currently saved in the system.
-
-All backups have the following filename structure:
+All synced files have the following filename structure:
 
 ```sh
 my_site_dev_200202_200020_yjrnz62yj4_v3.3.20.1.sql
@@ -154,19 +144,22 @@ Which includes:
 
 It's important not to manually rename these files as the plugin relies on this structure.
 
-## Automating backups
+## Pairing with Craft Remote Backup
 
-There is no built-in way to automate backups (periodic queue jobs are't something supported by the Craft queue). That said, it's very easy to automate backups either via cron or your own deployment script (if using Forge for example).
+[Craft Remote Backup](https://github.com/weareferal/craft-remote-backup) is a complimentary plugin that allows you to perform regular backups of both database and volumes to the same remote providers. Using these plugins together is a great way to manage remote files with your website.
 
-### Cron
+When using these plugins together, it's sensible to use a different remote folder to hold your synced files and your backup files. To do this we recommend configuring your environment variables to include two separate file paths: one for sync and one for backup. 
 
-Here is an example daily cron entry to backup and prune daily at 01:00:
+With AWS this might look like:
 
-```cron
-01 01 * * * /path/to/project/craft remote-backup/database/create
-02 01 * * * /path/to/project/craft remote-backup/database/prune
-03 01 * * * /path/to/project/craft remote-backup/volume/create
-04 01 * * * /path/to/project/craft remote-backup/volume/prune
+```sh
+AWS_ACCESS_KEY=
+AWS_SECRET_KEY=
+AWS_REGION="us-west-1"
+AWS_BUCKET_NAME="feral-backups"
+AWS_BUCKET_NAME="feral-backups"
+AWS_BUCKET_SYNC_PREFIX="craft-sync/craft-test"
+AWS_BUCKET_BACKUP_PREFIX="craft-backups/craft-test"
 ```
 
 ## Troubleshooting
@@ -179,7 +172,7 @@ For pushing and pulling, the most likely issue is with your credentials, so doub
 
 ### Memory limit creating volumes
 
-When you create a new volume backup, it's possible that your PHP memory limit will cause the process to crash. Make sure your memory limit is > than the volume folder you are trying to backup.
+When are syncing volumes, it's possible that your PHP memory limit will cause the process to crash. Make sure your memory limit is > than the volume folder you are trying to backup.
 
 ## Credits and support
 

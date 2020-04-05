@@ -68,19 +68,19 @@
           $td.attr("title", backups[i].value);
           $td.attr("data-filename", backups[i].value);
 
-          var $restoreButton = $("<button>")
+          var $pullButton = $("<button>")
             .addClass("btn small")
-            .attr("title", "Pull and restore this remote database")
-            .text("Restore");
+            .attr("title", "Pull and pull this remote database")
+            .text("Pull");
           var $deleteButton = $("<button>")
             .addClass("btn small")
             .attr("title", "Delete this remote database")
             .text("Delete");
 
           this.addListener(
-            $restoreButton,
+            $pullButton,
             "click",
-            this.restore.bind(this, backups[i].value)
+            this.pull.bind(this, backups[i].value)
           );
           this.addListener(
             $deleteButton,
@@ -88,7 +88,7 @@
             this.delete.bind(this, backups[i].value)
           );
 
-          $row.append($("<td>").addClass("thin").append($restoreButton));
+          $row.append($("<td>").addClass("thin").append($pullButton));
           $row.append($("<td>").addClass("thin").append($deleteButton));
           this.$tbody.append($row);
         }
@@ -108,13 +108,13 @@
     },
 
     /**
-     * Restore a database/volume
+     * Pull a database/volume
      */
-    restore: function (filename, ev) {
+    pull: function (filename, ev) {
       if (ev) {
         ev.preventDefault();
       }
-      var yes = confirm("Restore '" + filename + "'?");
+      var yes = confirm("Pull '" + filename + "'?");
       if (yes) {
         this.post(this.pullActionUrl, {
           filename: filename,

@@ -1,6 +1,6 @@
 {
     "pluginName": "Crate Remote Sync",
-    "pluginDescription": "Backup your database and assets to a remote destination like S3",
+    "pluginDescription": "Sync your database and assets across Craft environments",
     "pluginVersion": "1.0.0",
     "pluginAuthorName": "Timmy O'Mahony",
     "pluginVendorName": "weareferal",
