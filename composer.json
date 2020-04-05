@@ -1,0 +1,40 @@
+{
+    "name": "weareferal/remote-sync",
+    "description": "Sync your database and assets to a remote location",
+    "type": "craft-plugin",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "sync"
+    ],
+    "support": {
+        "docs": "https://github.com/weareferal/craft-remote-sync/blob/master/README.md",
+        "issues": "https://github.com/weareferal/craft-remote-sync/issues"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Timmy O'Mahony",
+            "homepage": "https://weareferal.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1",
+        "aws/aws-sdk-php": "^3.129"
+    },
+    "autoload": {
+        "psr-4": {
+            "weareferal\\RemoteSync\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Remote Sync",
+        "handle": "remote-sync",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/weareferal/craft-remote-sync/master/CHANGELOG.md",
+        "class": "weareferal\\RemoteSync\\RemoteSync"
+    }
+}

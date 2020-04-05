@@ -1,0 +1,62 @@
+{% import "_includes/forms" as forms %}
+
+
+{% if not settings.isConfigured() %}
+    <div class="field">
+        <p class="warning">{{ 'Plugin settings have not been configured yet'|t('remote-sync') }}</p>
+    </div>
+{% else %}
+    {% if queueActive %}
+        <div class="field">
+            <p class="warning">{{ 'Your operation is currently in the queue. The page will automatically reload when complete.'|t('remote-sync') }}</p>
+        </div>
+        <script>
+            // Reload the page when the queue empties
+            setInterval(function() {
+                $.get({
+                    url: Craft.getActionUrl("queue/get-job-info"),
+                    dataType: "json",
+                    success: function (response) {
+                        if (response['total'] <= 0) {
+                            window.location.reload();
+                        }
+                    },
+                });
+            }, 3000);
+        </script>
+    {% endif %}
+
+    <div class="rb-utilities">
+        {% include 'remote-sync/utilities/_includes/_remote-sync-section' with {
+            label: 'Database',
+            labelPlural: 'Databases',
+            icon: 'database',
+            id: 'rb-utilities-database',
+            listAction: 'remote-sync/remote-sync/list-databases',
+            pushAction: 'remote-sync/remote-sync/push-database',
+            pullAction: 'remote-sync/remote-sync/pull-database',
+            deleteAction: 'remote-sync/remote-sync/delete-database',
+            disabled: false
+        } %}
+
+        {% embed 'remote-sync/utilities/_includes/_remote-sync-section' with {
+            label: 'Volume',
+            labelPlural: 'Volumes',
+            icon: 'asset',
+            id: 'rb-utilities-volumes',
+            listAction: 'remote-sync/remote-sync/list-volumes',
+            pushAction: 'remote-sync/remote-sync/push-volume',
+            pullAction: 'remote-sync/remote-sync/pull-volume',
+            deleteAction: 'remote-sync/remote-sync/delete-volume',
+            disabled: not showVolumes
+        } %}
+            {% block message %}
+                {% if not showVolumes %}<p class="light">{{ 'No volumes created yet'|t('remote-sync') }}</p>{% endif %}
+            {% endblock %}
+        {% endembed %}
+
+        {% if queueActive %}
+            <div class="rb-utilities-guard">&nbsp;</div>
+        {% endif %}
+    </div>
+{% endif %}

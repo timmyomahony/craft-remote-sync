@@ -1,0 +1,35 @@
+<section id="{{ id }}" class='rb-utilities-section'>
+    <h2 data-icon="{{ icon }}">{{ "Remote " ~ labelPlural|t('remote-sync') }}</h2>
+    <table class="data fullwidth rb-utilities-table"
+        data-list-action="{{ listAction }}"
+        data-push-action="{{ pushAction }}"
+        data-pull-action="{{ pullAction }}"
+        data-delete-action="{{ deleteAction }}">
+        <tbody>
+            <tr class="first template-row default-row">
+                <td class="light"></td>
+            </tr>
+            <tr class="first no-results-row default-row">
+                <td class="light">
+                    {{ "No " ~ labelPlural|t('remote-sync') }}
+                </td>
+            </tr>
+            <tr class="first errors-row default-row">
+                <td class="error">
+                    {{ "Error Fetching " ~ labelPlural|t('remote-sync') }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <form class="rb-utilities-form" method="post">
+        {{ csrfInput() }}
+        <div class='rb-utilities-submit'>
+            <input class="btn submit {{ not disabled ? '' : 'disabled' }}" type="submit" value="{{ 'Push ' ~ label|t('remote-sync') }}">
+            <div class="utility-status"></div>
+        </div>
+    </form>
+    <div class="rb-utilities-overlay">
+        <img src="{{ craft.app.getAssetManager().getPublishedUrl('@app/web/assets/cp/dist', true, 'images/spinner.gif')}}">
+    </div>
+    {% block message %}{% endblock %}
+</section>
