@@ -2,6 +2,8 @@
 
 namespace weareferal\RemoteSync\controllers;
 
+use yii\web\BadRequestHttpException;
+
 use Craft;
 use craft\web\Controller;
 
@@ -16,10 +18,26 @@ use weareferal\RemoteSync\queue\DeleteVolumeJob;
 
 class RemoteSyncController extends Controller
 {
+    public function requirePluginEnabled()
+    {
+        if (!RemoteSync::getInstance()->getSettings()->enabled) {
+            throw new BadRequestHttpException('Plugin is not enabled');
+        }
+    }
+
+    public function requirePluginConfigured()
+    {
+        if (!RemoteSync::getInstance()->getSettings()->configured()) {
+            throw new BadRequestHttpException('Plugin is not correctly configured');
+        }
+    }
+
     public function actionListDatabases()
     {
         $this->requireCpRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         try {
             return $this->asJson([
@@ -36,6 +54,8 @@ class RemoteSyncController extends Controller
     {
         $this->requireCpRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         try {
             return $this->asJson([
@@ -52,6 +72,8 @@ class RemoteSyncController extends Controller
     {
         $this->requireCpRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         try {
             $useQueue = RemoteSync::getInstance()->getSettings()->useQueue;
@@ -78,6 +100,8 @@ class RemoteSyncController extends Controller
         $this->requirePostRequest();
         $this->requireCpRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         try {
             $useQueue = RemoteSync::getInstance()->getSettings()->useQueue;
@@ -104,6 +128,8 @@ class RemoteSyncController extends Controller
         $this->requireCpRequest();
         $this->requirePostRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         $filename = Craft::$app->getRequest()->getRequiredBodyParam('filename');
 
@@ -134,6 +160,8 @@ class RemoteSyncController extends Controller
         $this->requireCpRequest();
         $this->requirePostRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         $filename = Craft::$app->getRequest()->getRequiredBodyParam('filename');
 
@@ -165,6 +193,8 @@ class RemoteSyncController extends Controller
         $this->requireCpRequest();
         $this->requirePostRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         $filename = Craft::$app->getRequest()->getRequiredBodyParam('filename');
 
@@ -195,6 +225,8 @@ class RemoteSyncController extends Controller
         $this->requireCpRequest();
         $this->requirePostRequest();
         $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        $this->requiredPluginConfigured();
 
         $filename = Craft::$app->getRequest()->getRequiredBodyParam('filename');
 

@@ -10,6 +10,19 @@
 {%- endmacro %}
 {% from _self import configWarning %}
 
+{{ forms.lightswitchField({
+    first: true,
+    label: "Enabled"|t('remote-sync'),
+    instructions: "Enable the plugin"|t('remote-sync'),
+    name: 'enabled',
+    id: 'enabled',
+    on: settings.enabled,
+    errors: settings.getErrors('enabled'),
+    warning: configWarning('enabled', 'remote-sync')
+}) }}
+
+<hr>
+
 {{ forms.selectField({
     first: true,
     label: "Cloud Provider"|t('remote-sync'),
