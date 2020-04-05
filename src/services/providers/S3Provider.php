@@ -34,7 +34,12 @@ class S3Service extends RemoteSyncService implements Provider
         if ($s3BucketPrefix) {
             $kwargs['Prefix'] = $s3BucketPrefix;
         }
-        $response = $client->listObjects($kwargs);
+
+        try {
+            $response = $client->listObjects($kwargs);
+        } catch (AwsException $exception) {
+            throw new ProviderException($this->createErrorMessage($exception));
+        }
 
         $objects = $response['Contents'];
         if (!$objects) {

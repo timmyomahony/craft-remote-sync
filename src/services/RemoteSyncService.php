@@ -104,7 +104,7 @@ class RemoteSyncService extends Component
      */
     public function pushDatabase()
     {
-        $dir = $this->getSyncDir();
+        $dir = $this->getLocalDir();
         if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
@@ -126,7 +126,7 @@ class RemoteSyncService extends Component
      */
     public function pushVolumes(): string
     {
-        $dir = $this->getSyncDir();
+        $dir = $this->getLocalDir();
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
@@ -159,7 +159,7 @@ class RemoteSyncService extends Component
      */
     public function pullDatabase($filename)
     {
-        $dir = $this->getSyncDir();
+        $dir = $this->getLocalDir();
         $path = $dir . DIRECTORY_SEPARATOR . $filename;
         $this->pull($filename, $path);
         Craft::$app->getDb()->restore($path);
@@ -170,7 +170,7 @@ class RemoteSyncService extends Component
      */
     public function pullVolume($filename)
     {
-        $dir = $this->getSyncDir();
+        $dir = $this->getLocalDir();
         $path = $dir . DIRECTORY_SEPARATOR . $filename;
 
         $this->pull($filename, $path);
@@ -247,7 +247,7 @@ class RemoteSyncService extends Component
         return array_reverse($backups);
     }
 
-    protected function getSyncDir()
+    protected function getLocalDir()
     {
         return Craft::$app->path->getStoragePath() . "/sync";
     }

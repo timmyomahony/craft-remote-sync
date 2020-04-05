@@ -6,7 +6,6 @@
       this.$table = $("table", this.$element);
       this.$tbody = $("tbody", this.$table);
       this.$submit = $("input.submit", this.$form);
-      this.$status = $(".utility-status", this.$form);
       this.$loadingOverlay = $(".rb-utilities-overlay", this.$element);
 
       this.listActionUrl = this.$table.attr("data-list-action");
