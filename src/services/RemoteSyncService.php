@@ -7,8 +7,7 @@ use Craft;
 use Craft\helpers\FileHelper;
 use Craft\helpers\StringHelper;
 
-use weareferal\RemoteSync\RemoteSync;
-use weareferal\RemoteSync\services\providers\S3Service;
+use weareferal\RemoteSync\services\providers\S3Provider;
 use weareferal\RemoteSync\helpers\ZipHelper;
 
 
@@ -262,7 +261,7 @@ class RemoteSyncService extends Component
     {
         switch ($provider) {
             case "s3":
-                return S3Service::class;
+                return S3Provider::class;
                 break;
         }
     }

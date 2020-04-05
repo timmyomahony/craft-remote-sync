@@ -13,7 +13,7 @@ use weareferal\RemoteSync\exceptions\ProviderException;
 
 
 
-class S3Service extends RemoteSyncService implements Provider
+class S3Provider extends RemoteSyncService implements Provider
 {
     /**
      * Return S3 keys
