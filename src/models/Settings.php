@@ -6,6 +6,7 @@ use craft\base\Model;
 
 class Settings extends Model
 {
+    public $enabled = true;
     public $cloudProvider = 's3';
     public $s3AccessKey;
     public $s3SecretKey;
@@ -19,8 +20,11 @@ class Settings extends Model
     {
         return [
             [
-                ['cloudProvider', 's3AccessKey', 's3SecretKey', 's3BucketName', 's3RegionName'],
-                'required'
+                ['s3AccessKey', 's3SecretKey', 's3BucketName', 's3RegionName', 'pruneHourlyCount'],
+                'required',
+                'when' => function ($model) {
+                    return $model->cloudProvider == 's3' & $model->enabled == 1;
+                }
             ],
             [
                 ['cloudProvider', 's3AccessKey', 's3SecretKey', 's3BucketName', 's3RegionName', 's3BucketPrefix'],

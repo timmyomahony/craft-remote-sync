@@ -14,12 +14,29 @@ use weareferal\RemoteSync\RemoteSync;
  */
 class VolumeController extends Controller
 {
+    public function requirePluginEnabled()
+    {
+        if (!RemoteSync::getInstance()->getSettings()->enabled) {
+            throw new \Exception('Remote Sync Plugin not enabled');
+        }
+    }
+
+    public function requirePluginConfigured()
+    {
+        if (!RemoteSync::getInstance()->getSettings()->configured()) {
+            throw new \Exception('Remote Sync Plugin not correctly configured');
+        }
+    }
+
     /**
      * List remote volumes
      */
     public function actionList()
     {
         try {
+            $this->requirePluginEnabled();
+            $this->requirePluginConfigured();
+
             $results = RemoteSync::getInstance()->remotesync->listVolumes();
             if (count($results) <= 0) {
                 $this->stdout("No remote volumes" . PHP_EOL, Console::FG_YELLOW);
@@ -43,6 +60,9 @@ class VolumeController extends Controller
     public function actionPush()
     {
         try {
+            $this->requirePluginEnabled();
+            $this->requirePluginConfigured();
+
             $filename = RemoteSync::getInstance()->remotesync->pushVolumes();
             if (!$filename) {
                 $this->stdout("No remote volumes" . PHP_EOL, Console::FG_YELLOW);
@@ -64,6 +84,9 @@ class VolumeController extends Controller
     public function actionPull($filename)
     {
         try {
+            $this->requirePluginEnabled();
+            $this->requirePluginConfigured();
+
             RemoteSync::getInstance()->remotesync->pullVolume($filename);
             $this->stdout("Pulled and restored remote volume:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout(" " . $filename . PHP_EOL);
@@ -81,6 +104,9 @@ class VolumeController extends Controller
     public function actionDelete($filename)
     {
         try {
+            $this->requirePluginEnabled();
+            $this->requirePluginConfigured();
+
             RemoteSync::getInstance()->remotesync->deleteVolume($filename);
             $this->stdout("Deleted remote volume:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout(" " . $filename . PHP_EOL);

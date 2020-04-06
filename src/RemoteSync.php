@@ -52,22 +52,24 @@ class RemoteSync extends Plugin
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function (RegisterUserPermissionsEvent $event) {
-                $event->permissions['RemoteSync'] = [
+                $event->permissions['Remote Sync'] = [
                     'remote-sync' => [
-                        'label' => 'Sync database and assets',
+                        'label' => 'Push and pull/restore database and volume assets',
                     ],
                 ];
             }
         );
 
         // Register with Utilities service
-        Event::on(
-            Utilities::class,
-            Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = RemoteSyncUtility::class;
-            }
-        );
+        if ($this->getSettings()->enabled) {
+            Event::on(
+                Utilities::class,
+                Utilities::EVENT_REGISTER_UTILITY_TYPES,
+                function (RegisterComponentTypesEvent $event) {
+                    $event->types[] = RemoteSyncUtility::class;
+                }
+            );
+        }
     }
 
     protected function createSettingsModel(): Settings
