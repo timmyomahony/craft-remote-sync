@@ -20,7 +20,7 @@ class Settings extends Model
     {
         return [
             [
-                ['s3AccessKey', 's3SecretKey', 's3BucketName', 's3RegionName', 'pruneHourlyCount'],
+                ['s3AccessKey', 's3SecretKey', 's3BucketName', 's3RegionName'],
                 'required',
                 'when' => function ($model) {
                     return $model->cloudProvider == 's3' & $model->enabled == 1;
