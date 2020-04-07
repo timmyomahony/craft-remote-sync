@@ -2,7 +2,7 @@
 
 <img src="src/icon.svg" width="125px">
 
-Sync your database and assets across Craft environments using a remote provider like AWS S3
+Sync your database and assets across Craft environments using a remote destination like AWS S3.
 
 ## Overview
 
@@ -19,6 +19,10 @@ To achieve this, the plugin uses a remote "single source of truth" (currently a 
 For more information on the reasoning behind this approach see our blog post on the topic  ["Syncing your DB and assets across environments in Craft 3"](https://weareferal.com/tldr/syncing-your-db-and-assets-across-environments-in-craft-3/) or get in touch at [timmy@weareferal.com](mailto:timmy@weareferal.com)
 
 This plugin is inspired by [Andrew Welsch's `craft-scripts` library](https://github.com/nystudio107/craft-scripts) who also [has a great blog post on syncing you DB and assets in Craft](https://nystudio107.com/blog/database-asset-syncing-between-environments-in-craft-cms).
+
+## Requirements
+
+This plugin requires Craft CMS 3.0.0 or later.
 
 ## Installation
 
@@ -166,18 +170,14 @@ AWS_BUCKET_BACKUP_PREFIX="craft-backups/craft-test"
 
 ## Troubleshooting
 
-If you are getting errors while pushing/pulling/creating/restoring or pruning, the first thing to check is the Craft logs at `storage/logs/web.log`.
-
-### Credentials
-
-For pushing and pulling, the most likely issue is with your credentials, so double check that those are OK.
+If you are getting errors, the first thing to check is the Craft logs at `storage/logs/web.log`. The most likely issue is with your credentials, so double check that those are OK.
 
 ### Memory Limit Creating Volumes
 
 When are syncing volumes, it's possible that your PHP memory limit will cause the process to crash. Make sure your memory limit is > than the volume folder you are trying to backup.
 
-## Credits and Support
+## Support
 
-<img src="resources/img/feral-logo.svg" width="250px" style="text-align:left">
+<img src="resources/img/feral-logo.svg" width="250px">
 
 Brought to you by [Feral](https://weareferal.com). Any problems email [timmy@weareferal.com](mailto:timmy@weareferal.com?subject=Craft%20Env%20Sync%20Question) or leave an issue on Github.
