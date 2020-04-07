@@ -1,8 +1,24 @@
-# Craft Remote Sync plugin for Craft CMS 3.x
+# Craft Remote Sync
 
-Sync your database and assets across Craft environments easily through the Craft Control Panel and command line.
+<img src="src/icon.svg" width="125px">
 
-![Craft Remote Sync Logo](resources/img/plugin-logo.png)
+Sync your database and assets across Craft environments using a remote provider like AWS S3
+
+## Overview
+
+![Craft Remote Sync Overview](resources/img/utilities-screenshot.png)
+
+Craft Remote Sync makes it easy to sync your database and volume assets across a number of different environments from the comfort of the Craft Control Panel.
+
+This makes it much easier to move your site from local development to staging and onto production and avoids the need to regularly SSH into servers to perform database dumps and restores.
+
+To achieve this, the plugin uses a remote "single source of truth" (currently a S3 bucket) to push and pull database and asset/volumes files from.
+
+![Craft Remote Sync Overview](./resources/img/overview.png)
+
+For more information on the reasoning behind this approach see our blog post on the topic  ["Syncing your DB and assets across environments in Craft 3"](https://weareferal.com/tldr/syncing-your-db-and-assets-across-environments-in-craft-3/) or get in touch at [timmy@weareferal.com](mailto:timmy@weareferal.com)
+
+This plugin is inspired by [Andrew Welsch's `craft-scripts` library](https://github.com/nystudio107/craft-scripts) who also [has a great blog post on syncing you DB and assets in Craft](https://nystudio107.com/blog/database-asset-syncing-between-environments-in-craft-cms).
 
 ## Installation
 
@@ -21,20 +37,6 @@ To install the plugin, follow these instructions.
    ```
 
 3. In the Control Panel, go to Settings → Plugins and click the _Install_ button for Craft Remote Sync.
-
-## Overview
-
-![Craft Remote Sync Overview](resources/img/utilities-screenshot.png)
-
-Craft Remote Sync makes it easy to sync your database and volume assets across a number of different environments from the comfort of the Craft Control Panel. This makes it much easier to move your site from local development to staging and onto production and avoids the need to regularly SSH into servers to perform database dumps and restores.
-
-To do this, the plugin uses a remote "single source of truth" (currently a S3 bucket) to push and pull database and asset/volumes files to.
-
-![Craft Remote Sync Overview](README.assets/overview-6092824.png)
-
-For more information on the reasoning behind this approach see our blog post on the topic  ["Syncing your DB and assets across environments in Craft 3"](https://weareferal.com/tldr/syncing-your-db-and-assets-across-environments-in-craft-3/) or get in touch at [timmy@weareferal.com](mailto:timmy@weareferal.com)
-
-This plugin is inspired by [Andrew Welsch's `craft-scripts` library](https://github.com/nystudio107/craft-scripts) who also [has a great blog post on syncing you DB and assets in Craft](https://nystudio107.com/blog/database-asset-syncing-between-environments-in-craft-cms).
 
 ## Configuration
 
@@ -170,10 +172,12 @@ If you are getting errors while pushing/pulling/creating/restoring or pruning, t
 
 For pushing and pulling, the most likely issue is with your credentials, so double check that those are OK.
 
-### Memory limit creating volumes
+### Memory Limit Creating Volumes
 
 When are syncing volumes, it's possible that your PHP memory limit will cause the process to crash. Make sure your memory limit is > than the volume folder you are trying to backup.
 
-## Credits and support
+## Credits and Support
+
+<img src="resources/img/feral-logo.svg" width="250px" style="text-align:left">
 
 Brought to you by [Feral](https://weareferal.com). Any problems email [timmy@weareferal.com](mailto:timmy@weareferal.com?subject=Craft%20Env%20Sync%20Question) or leave an issue on Github.
