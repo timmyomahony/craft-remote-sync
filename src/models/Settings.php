@@ -15,6 +15,7 @@ class Settings extends Model
     public $s3BucketPrefix;
 
     public $useQueue = false;
+    public $keepEmergencyBackup = true;
 
     public function rules(): array
     {
@@ -31,7 +32,7 @@ class Settings extends Model
                 'string'
             ],
             [
-                ['useQueue',],
+                ['useQueue', 'keepEmergencyBackup'],
                 'boolean'
             ]
         ];

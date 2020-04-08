@@ -132,6 +132,15 @@ You can enable this via the "Use Queue" lightswitch in the settings or via the `
 
 The CLI commands ignore the queue setting. In other words, they will always run synchrously. This is by design as it's likely you will want to see the results of these operations if they are part of your crontab or deployment script.
 
+### Emergency Backup
+
+When enabled, a local copy of both current database or volumes will be created and saved *before* pull & restoring a remote version.
+
+This is a last resort in case you accidently pull and restore something you didn't mean to. Bear in mind that only 1 emergency backup is kept:
+
+- `storage/sync/emergency-backup.sql` (database)
+- `storage/sync/emergency-backup.zip` (volumes)
+
 ## Functionality
 
 All synced files have the following filename structure:

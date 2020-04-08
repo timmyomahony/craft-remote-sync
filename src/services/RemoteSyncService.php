@@ -7,6 +7,7 @@ use Craft;
 use Craft\helpers\FileHelper;
 use Craft\helpers\StringHelper;
 
+use weareferal\RemoteSync\RemoteSync;
 use weareferal\RemoteSync\services\providers\S3Provider;
 use weareferal\RemoteSync\helpers\ZipHelper;
 
@@ -103,16 +104,10 @@ class RemoteSyncService extends Component
      */
     public function pushDatabase()
     {
-        $dir = $this->getLocalDir();
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
-        }
         $filename = $this->getFilename();
-        $path = $dir . DIRECTORY_SEPARATOR . $filename . '.sql';
-        Craft::$app->getDb()->backupTo($path);
+        $path = $this->createDatabaseDump($filename);
         $this->push($path);
         unlink($path);
-
         return $filename;
     }
 
@@ -125,12 +120,65 @@ class RemoteSyncService extends Component
      */
     public function pushVolumes(): string
     {
-        $dir = $this->getLocalDir();
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
         $filename = $this->getFilename();
-        $path = $dir . DIRECTORY_SEPARATOR . $filename . '.zip';
+        $path = $this->createVolumesZip($filename);
+        $this->push($path);
+        unlink($path);
+        return $filename;
+    }
+
+    /**
+     * Pull a remote database and restore it
+     * 
+     */
+    public function pullDatabase($filename)
+    {
+        // Before pulling a database, backup the local
+        $settings = RemoteSync::getInstance()->getSettings();
+        if ($settings->keepEmergencyBackup) {
+            $this->createDatabaseDump("emergency-backup");
+        }
+
+        $path = $this->getLocalDir() . DIRECTORY_SEPARATOR . $filename;
+        $this->pull($filename, $path);
+        Craft::$app->getDb()->restore($path);
+        unlink($path);
+    }
+
+    /**
+     * Pull remote volumes and restore them
+     */
+    public function pullVolume($filename)
+    {
+        // Before pulling volumes, backup the local
+        $settings = RemoteSync::getInstance()->getSettings();
+        if ($settings->keepEmergencyBackup) {
+            $this->createVolumesZip("emergency-backup");
+        }
+
+        $path = $this->getLocalDir() . DIRECTORY_SEPARATOR . $filename;
+        $this->pull($filename, $path);
+        $this->restoreVolumesZip($path);
+        unlink($path);
+    }
+
+    public function deleteDatabase($filename)
+    {
+        return $this->delete($filename);
+    }
+
+    public function deleteVolume($filename)
+    {
+        return $this->delete($filename);
+    }
+
+    private function createVolumesZip($filename): string
+    {
+        $path = $this->getLocalDir() . DIRECTORY_SEPARATOR . $filename . '.zip';
+        if (file_exists($path)) {
+            unlink($path);
+        }
+
         $volumes = Craft::$app->getVolumes()->getAllVolumes();
         $tmpDirName = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . strtolower(StringHelper::randomString(10));
 
@@ -145,35 +193,11 @@ class RemoteSyncService extends Component
 
         ZipHelper::recursiveZip($tmpDirName, $path);
         FileHelper::clearDirectory(Craft::$app->getPath()->getTempPath());
-
-        $this->push($path);
-        unlink($path);
-
-        return $filename;
+        return $path;
     }
 
-    /**
-     * Pull a remote database and restore it
-     * 
-     */
-    public function pullDatabase($filename)
+    private function restoreVolumesZip($path)
     {
-        $dir = $this->getLocalDir();
-        $path = $dir . DIRECTORY_SEPARATOR . $filename;
-        $this->pull($filename, $path);
-        Craft::$app->getDb()->restore($path);
-    }
-
-    /**
-     * Pull remote volumes and restore them
-     */
-    public function pullVolume($filename)
-    {
-        $dir = $this->getLocalDir();
-        $path = $dir . DIRECTORY_SEPARATOR . $filename;
-
-        $this->pull($filename, $path);
-
         $volumes = Craft::$app->getVolumes()->getAllVolumes();
         $tmpDirName = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . strtolower(StringHelper::randomString(10));
 
@@ -197,14 +221,11 @@ class RemoteSyncService extends Component
         FileHelper::clearDirectory(Craft::$app->getPath()->getTempPath());
     }
 
-    public function deleteDatabase($filename)
+    private function createDatabaseDump($filename): string
     {
-        return $this->delete($filename);
-    }
-
-    public function deleteVolume($filename)
-    {
-        return $this->delete($filename);
+        $path = $this->getLocalDir() . DIRECTORY_SEPARATOR . $filename . '.sql';
+        Craft::$app->getDb()->backupTo($path);
+        return $path;
     }
 
     /**
@@ -248,7 +269,11 @@ class RemoteSyncService extends Component
 
     protected function getLocalDir()
     {
-        return Craft::$app->path->getStoragePath() . "/sync";
+        $dir = Craft::$app->path->getStoragePath() . "/sync";
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        return $dir;
     }
 
     /**
