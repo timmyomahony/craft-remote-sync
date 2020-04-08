@@ -8,6 +8,11 @@
       this.$submit = $("input.submit", this.$form);
       this.$loadingOverlay = $(".rb-utilities-overlay", this.$element);
 
+      this.label = this.$element.attr("data-label");
+      this.labelPlural = this.$element.attr("data-label-plural");
+      this.pullMessage = this.$element.attr("data-pull-message");
+      this.deleteMessage = this.$element.attr("data-delete-message");
+
       this.listActionUrl = this.$table.attr("data-list-action");
       this.pushActionUrl = this.$table.attr("data-push-action");
       this.pullActionUrl = this.$table.attr("data-pull-action");
@@ -69,8 +74,8 @@
 
           var $pullButton = $("<button>")
             .addClass("btn small")
-            .attr("title", "Pull and pull this remote database")
-            .text("Pull");
+            .attr("title", "Pull and restore this remote database")
+            .text("Pull & Restore");
           var $deleteButton = $("<button>")
             .addClass("btn small")
             .attr("title", "Delete this remote database")
@@ -113,7 +118,7 @@
       if (ev) {
         ev.preventDefault();
       }
-      var yes = confirm("Pull '" + filename + "'?");
+      var yes = confirm(this.pullMessage);
       if (yes) {
         this.post(this.pullActionUrl, {
           filename: filename,
@@ -128,7 +133,7 @@
       if (ev) {
         ev.preventDefault();
       }
-      var yes = confirm("Delete '" + filename + "'?");
+      var yes = confirm(this.deleteMessage);
       if (yes) {
         this.post(this.deleteActionUrl, {
           filename: filename,

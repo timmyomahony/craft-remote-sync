@@ -28,6 +28,8 @@
         {% include 'remote-sync/utilities/_includes/_remote-sync-section' with {
             label: 'Database',
             labelPlural: 'Databases',
+            pullMessage: ("Are you sure you want to pull & restore this database? This is destructive and will replace your local database!" | t),
+            deleteMessage: ("Are you sure you want to delete this remote database? This will not affect your local database" | t),
             icon: 'database',
             id: 'rb-utilities-database',
             listAction: 'remote-sync/remote-sync/list-databases',
@@ -40,6 +42,8 @@
         {% embed 'remote-sync/utilities/_includes/_remote-sync-section' with {
             label: 'Volume',
             labelPlural: 'Volumes',
+            pullMessage: ("Are you sure you want to pull & restore these volumes? This is destructive and will replace your local volumes!" | t),
+            deleteMessage: ("Are you sure you want to delete these remote volumes? This will not affect your local volumes" | t),
             icon: 'asset',
             id: 'rb-utilities-volumes',
             listAction: 'remote-sync/remote-sync/list-volumes',
