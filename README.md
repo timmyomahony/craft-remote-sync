@@ -48,7 +48,7 @@ The easiest way to configure Remote Sync is via the settings page:
 
 ![Craft Remote Sync Overview](resources/img/settings-screenshot.png)
 
-Alternatively, if you want to configure the plugin on a per-environment basis, you can copy the `config/remote-backup.example.php` to your project's `config/remote-backup.php` file. These settings will override the Control Panel settings.
+Alternatively, if you want to configure the plugin on a per-environment basis, you can copy the `config/remote-sync.example.php` to your project's `config/remote-sync.php` file. These settings will override the Control Panel settings.
 
 ```php
 <?php
