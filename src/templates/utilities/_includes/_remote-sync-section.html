@@ -1,4 +1,9 @@
-<section id="{{ id }}" class='rb-utilities-section'>
+<section id="{{ id }}" class='rb-utilities-section'
+    data-label="{{ label }}"
+    data-label-plural="{{ labelPlural }}"
+    data-pull-message="{{ pullMessage }}"
+    data-delete-message="{{ deleteMessage }}"
+>
     <h2 data-icon="{{ icon }}">{{ "Remote " ~ labelPlural|t('remote-sync') }}</h2>
     <table class="data fullwidth rb-utilities-table"
         data-list-action="{{ listAction }}"

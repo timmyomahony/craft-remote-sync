@@ -117,3 +117,15 @@
     errors: settings.getErrors('useQueue'),
     warning: configWarning('useQueue', 'remote-sync')
 }) }}
+
+<hr>
+
+{{ forms.lightswitchField({
+    label: "Keep an Emergency Backup"|t('remote-sync'),
+    instructions: "Create an emergency backup before pulling & restoring."|t('remote-sync'),
+    name: 'keepEmergencyBackup',
+    id: 'keepEmergencyBackup',
+    on: settings.keepEmergencyBackup,
+    errors: settings.getErrors('keepEmergencyBackup'),
+    warning: configWarning('keepEmergencyBackup', 'remote-sync')
+}) }}

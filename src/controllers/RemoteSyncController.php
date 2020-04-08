@@ -132,17 +132,17 @@ class RemoteSyncController extends Controller
         $this->requirePluginConfigured();
 
         $filename = Craft::$app->getRequest()->getRequiredBodyParam('filename');
+        $plugin = RemoteSync::getInstance();
+        $settings = $plugin->getSettings();
 
         try {
-            $useQueue = RemoteSync::getInstance()->getSettings()->useQueue;
-
-            if ($useQueue) {
+            if ($settings->useQueue) {
                 Craft::$app->queue->push(new PullDatabaseJob([
                     'filename' => $filename
                 ]));
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                RemoteSync::getInstance()->remotesync->pullDatabase($filename);
+                $plugin->remotesync->pullDatabase($filename);
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Database pulled'));
             }
         } catch (\Exception $e) {
@@ -164,17 +164,17 @@ class RemoteSyncController extends Controller
         $this->requirePluginConfigured();
 
         $filename = Craft::$app->getRequest()->getRequiredBodyParam('filename');
+        $plugin = RemoteSync::getInstance();
+        $settings = $plugin->getSettings();
 
         try {
-            $useQueue = RemoteSync::getInstance()->getSettings()->useQueue;
-
-            if ($useQueue) {
+            if ($settings->useQueue) {
                 Craft::$app->queue->push(new PullVolumeJob([
                     'filename' => $filename
                 ]));
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                RemoteSync::getInstance()->remotesync->pullVolume($filename);
+                $plugin->remotesync->pullVolume($filename);
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Volumes pulled'));
             }
         } catch (\Exception $e) {
