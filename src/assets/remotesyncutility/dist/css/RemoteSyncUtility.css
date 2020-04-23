@@ -14,6 +14,11 @@
   margin-bottom: 20px;
 }
 
+table.data.rb-utilities-table tbody tr:not(.disabled):hover th,
+table.data.rb-utilities-table tbody tr:not(.disabled):hover td {
+  background-color: transparent;
+}
+
 .rb-utilities-table .default-row {
   display: none;
 }
@@ -21,7 +26,6 @@
 .rb-utilities-table tbody tr td:first-child {
   display: flex;
   align-items: center;
-  cursor: help;
 }
 
 .rb-utilities-table tbody tr:not(.default-row) td:first-child:before {
