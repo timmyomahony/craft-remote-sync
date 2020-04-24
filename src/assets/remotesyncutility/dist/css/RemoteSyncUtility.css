@@ -11,7 +11,7 @@
 }
 
 .rb-utilities-table {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 table.data.rb-utilities-table tbody tr:not(.disabled):hover th,
@@ -26,6 +26,7 @@ table.data.rb-utilities-table tbody tr:not(.disabled):hover td {
 .rb-utilities-table tbody tr td:first-child {
   display: flex;
   align-items: center;
+  padding-left: 0;
 }
 
 .rb-utilities-table tbody tr:not(.default-row) td:first-child:before {

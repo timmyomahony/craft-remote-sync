@@ -65,7 +65,7 @@
           var $row = this.$tbody.find(".template-row").clone();
           var $td = $row.find("td");
           $row.removeClass("template-row default-row");
-          if (i > 0) {
+          if (i < backups.length - 1) {
             $row.removeClass("first");
           }
           $td.text(backups[i].label);
@@ -94,7 +94,7 @@
 
           $row.append($("<td>").addClass("thin").append($pullButton));
           $row.append($("<td>").addClass("thin").append($deleteButton));
-          this.$tbody.append($row);
+          this.$tbody.prepend($row);
         }
       } else {
         this.showTableNoResults();
