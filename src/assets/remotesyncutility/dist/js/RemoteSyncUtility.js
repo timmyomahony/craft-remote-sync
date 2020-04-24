@@ -65,12 +65,15 @@
           var $row = this.$tbody.find(".template-row").clone();
           var $td = $row.find("td");
           $row.removeClass("template-row default-row");
-          if (i < backups.length - 1) {
+          if (i > 0) {
             $row.removeClass("first");
           }
           $td.text(backups[i].label);
           $td.attr("title", backups[i].value);
           $td.attr("data-filename", backups[i].value);
+          if (i === 0) {
+            $td.append($("<span>").text("latest"));
+          }
 
           var $pullButton = $("<button>")
             .addClass("btn small")
@@ -94,7 +97,7 @@
 
           $row.append($("<td>").addClass("thin").append($pullButton));
           $row.append($("<td>").addClass("thin").append($deleteButton));
-          this.$tbody.prepend($row);
+          this.$tbody.append($row);
         }
       } else {
         this.showTableNoResults();

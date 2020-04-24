@@ -5,7 +5,7 @@
     data-delete-message="{{ deleteMessage }}"
 >
     <h2 data-icon="{{ icon }}">{{ "Remote " ~ labelPlural|t('remote-sync') }}</h2>
-    <table class="data fullwidth rb-utilities-table"
+    <table class="data fullwidth rb-utilities-table rb-utilities-table--collapse"
         data-list-action="{{ listAction }}"
         data-push-action="{{ pushAction }}"
         data-pull-action="{{ pullAction }}"
@@ -26,6 +26,7 @@
             </tr>
         </tbody>
     </table>
+    <!-- <p class="light small">Show More</p> -->
     <form class="rb-utilities-form" method="post">
         {{ csrfInput() }}
         <div class='rb-utilities-submit'>
