@@ -14,6 +14,12 @@ return [
         // Keep a single emergency backup of the database/volumes when restoring
         'keepEmergencyBackup' => true,
 
+        // Remove old files
+        'prune' => false,
+
+        // The number of recent files to keep if pruning is enabled
+        'pruneLimit' => 10,
+
         // Hide the database sync panel on the utilities page
         'hideDatabases' => true,
 
