@@ -21,10 +21,10 @@ return [
         'pruneLimit' => 10,
 
         // Hide the database sync panel on the utilities page
-        'hideDatabases' => true,
+        'hideDatabases' => false,
 
         // Hide the volume sync panel on the utilities page
-        'hideVolumes' => true
+        'hideVolumes' => false
     ],
     'dev' => [],
     'staging' => [],
