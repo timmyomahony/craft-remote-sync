@@ -57,7 +57,7 @@ class RemoteSyncInstance
 class RemoteSyncService extends Component
 {
     /**
-     * Return the remote database backup filenames
+     * Return the remote database filenames
      * 
      * @return array An array of label/filename objects
      * @since 1.0.0
@@ -77,7 +77,7 @@ class RemoteSyncService extends Component
     }
 
     /**
-     * Return the remote bolume backup filenames
+     * Return the remote volume filenames
      * 
      * @return array An array of label/filename objects
      * @since 1.0.0
@@ -97,7 +97,7 @@ class RemoteSyncService extends Component
     }
 
     /**
-     * Create a new Remote Sync of the database
+     * Push database to remote provider
      * 
      * @return string The filename of the newly created Remote Sync
      * @since 1.0.0
@@ -112,7 +112,7 @@ class RemoteSyncService extends Component
     }
 
     /**
-     * Push all volumes
+     * Push all volumes to remote provider
      * 
      * @return string The filename of the newly created Remote Sync
      * @return null If no volumes exist
@@ -128,8 +128,9 @@ class RemoteSyncService extends Component
     }
 
     /**
-     * Pull a remote database and restore it
+     * Pull and restore remote database file
      * 
+     * @param string $filename the file to restore
      */
     public function pullDatabase($filename)
     {
@@ -146,7 +147,10 @@ class RemoteSyncService extends Component
     }
 
     /**
-     * Pull remote volumes and restore them
+     * Pull and restore a particular remote volume file.
+     * 
+     * @param string $filename the file to restore
+     * @since 1.0.0
      */
     public function pullVolume($filename)
     {
@@ -162,16 +166,107 @@ class RemoteSyncService extends Component
         unlink($path);
     }
 
+    /**
+     * Delete file
+     * 
+     * Delete a single database file remotely.
+     * 
+     * @param string $filename the file to delete
+     * @since 1.0.0
+     */
     public function deleteDatabase($filename)
     {
         return $this->delete($filename);
     }
 
+    /**
+     * Delete file
+     * 
+     * Delete a single volume file remotely.
+     * 
+     * @param string $filename the file to delete
+     * @since 1.0.0
+     */
     public function deleteVolume($filename)
     {
         return $this->delete($filename);
     }
 
+    /**
+     * Prune database files
+     * 
+     * Delete all "old" database files
+     * 
+     * @param boolean $dryRun if true do everything except actually deleting
+     * @return array the deleted files
+     * @since 1.2.0
+     */
+    public function pruneDatabases($dryRun = false)
+    {
+        $filenames = $this->list(".sql");
+        return $this->prune($filenames, $dryRun);
+    }
+
+    /**
+     * Prune volume files
+     * 
+     * Delete all "old" database files
+     * 
+     * @param boolean $dryRun if true do everything except actually deleting
+     * @return array the deleted files
+     * @since 1.2.0
+     */
+    public function pruneVolumes($dryRun = false)
+    {
+        $filenames = $this->list(".zip");
+        return $this->prune($filenames, $dryRun);
+    }
+
+    /**
+     * Prune files
+     * 
+     * Delete "old" remote files. This operation relies on "prune" from the
+     * settings. The algorithm is simple, delete all files > than the sync
+     * limit. In other words, if the sync limit is 5 and we have 9 backups,
+     * delete the 6th-9th backups keeping the 5 most recent.
+     * 
+     * @param array $filenames an array of remote filenames
+     * @param boolean $dryRun if true do everything except actually deleting
+     * @return array the deleted files (or empty array)
+     * @since 1.2.0
+     */
+    private function prune($filenames, $dryRun = false)
+    {
+        $deleted = [];
+        $backups = $this->parseFilenames($filenames);
+        $settings = RemoteSync::getInstance()->getSettings();
+        if (!$settings->prune) {
+            Craft::warning("Pruning disabled" . PHP_EOL, 'remote-sync');
+            return $deleted;
+        } else if (count($backups) < $settings->pruneLimit) {
+            Craft::warning("Skipping file pruning: files < prune limit" . PHP_EOL, 'remote-sync');
+            return $deleted;
+        }
+        $backups = array_slice($backups, $settings->pruneLimit, count($backups));
+        foreach ($backups as $backup) {
+            $filename = $backup->filename;
+            if (!$dryRun) {
+                $this->delete($backup->filename);
+                array_push($deleted, $filename);
+            }
+        }
+        return $deleted;
+    }
+
+    /**
+     * Create volumes zip
+     * 
+     * Generates a temporary zip file of all volumes
+     * 
+     * @param string $filename the filename to give the new zip
+     * @return string $path the temporary path to the new zip file
+     * @since 1.0.0
+     */
     private function createVolumesZip($filename): string
     {
         $path = $this->getLocalDir() . DIRECTORY_SEPARATOR . $filename . '.zip';
@@ -196,6 +291,15 @@ class RemoteSyncService extends Component
         return $path;
     }
 
+    /**
+     * Restore volumes
+     * 
+     * Unzips volumes to a temporary path and then moves them to the "web" 
+     * folder.
+     * 
+     * @param string $path the path to the zip file to restore
+     * @since 1.0.0
+     */
     private function restoreVolumesZip($path)
     {
         $volumes = Craft::$app->getVolumes()->getAllVolumes();
@@ -221,6 +325,16 @@ class RemoteSyncService extends Component
         FileHelper::clearDirectory(Craft::$app->getPath()->getTempPath());
     }
 
+    /**
+     * Create database sql dump
+     * 
+     * Uses the underlying Craft 3 "backup/db" function to create a new database
+     * backup in the sync folder.
+     * 
+     * @param string $filename the file name to give the new backup
+     * @return string $path the 
+     * @since 1.0.0
+     */
     private function createDatabaseDump($filename): string
     {
         $path = $this->getLocalDir() . DIRECTORY_SEPARATOR . $filename . '.sql';
@@ -236,6 +350,7 @@ class RemoteSyncService extends Component
      * https://github.com/craftcms/cms/tree/master/src/db/Connection.php
      * 
      * @return string The unique backup filename
+     * @since 1.0.0
      */
     private function getFilename(): string
     {
@@ -251,6 +366,7 @@ class RemoteSyncService extends Component
      * 
      * @param string[] Array of filenames
      * @return array[] Array of Backup objects
+     * @since 1.0.0
      */
     private function parseFilenames($filenames): array
     {
@@ -267,6 +383,15 @@ class RemoteSyncService extends Component
         return array_reverse($backups);
     }
 
+    /**
+     * Get local directory
+     * 
+     * Return (or creates) the local "web/sync" directory we use for synced
+     * files. This is a separate folder to the default Craft backup folder.
+     * 
+     * @return string $dir a path to the directory
+     * @since 1.0.0
+     */
     protected function getLocalDir()
     {
         $dir = Craft::$app->path->getStoragePath() . "/sync";
@@ -277,10 +402,14 @@ class RemoteSyncService extends Component
     }
 
     /**
-     * Factory method to return appropriate class depending on provider
-     * setting
+     * Create provider
      * 
-     * @return class The provider
+     * Factory method to return appropriate class depending on provider
+     * settings
+     * 
+     * @param string $provider the provider (via settings)
+     * @return class The provider class to be instantiated
+     * @since 1.0.0
      */
     public static function create($provider)
     {

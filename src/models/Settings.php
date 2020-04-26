@@ -7,6 +7,7 @@ use craft\base\Model;
 class Settings extends Model
 {
     public $enabled = true;
+
     public $cloudProvider = 's3';
     public $s3AccessKey;
     public $s3SecretKey;
@@ -16,6 +17,9 @@ class Settings extends Model
 
     public $useQueue = false;
     public $keepEmergencyBackup = true;
+
+    public $prune = false;
+    public $pruneLimit = 10;
 
     public $hideDatabases = false;
     public $hideVolumes = false;
@@ -36,8 +40,16 @@ class Settings extends Model
                 'string'
             ],
             [
-                ['useQueue', 'keepEmergencyBackup', 'hideDatabases', 'hideVolumes'],
+                ['useQueue', 'keepEmergencyBackup', 'hideDatabases', 'hideVolumes', 'prune'],
                 'boolean'
+            ],
+            [
+                'pruneLimit', 'integer', 'min' => 1
+            ],
+            [
+                'pruneLimit', 'required', 'when' => function ($model) {
+                    return $model->prune;
+                }
             ],
             // This seems like a poor API design in Yii 2. We want to show a 
             // validation when a user hides both the database and volumes. You
