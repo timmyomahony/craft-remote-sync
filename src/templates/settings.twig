@@ -129,3 +129,25 @@
     errors: settings.getErrors('keepEmergencyBackup'),
     warning: configWarning('keepEmergencyBackup', 'remote-sync')
 }) }}
+
+<hr>
+
+{{ forms.lightswitchField({
+    label: "Hide Databases"|t('remote-sync'),
+    instructions: "Hide database files on the utilities page"|t('remote-sync'),
+    name: 'hideDatabases',
+    id: 'hideDatabases',
+    on: settings.hideDatabases,
+    errors: settings.getErrors('hideDatabases'),
+    warning: configWarning('hideDatabases', 'remote-sync')
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Hide Volumes"|t('remote-sync'),
+    instructions: "Hide volume files on the utilities page"|t('remote-sync'),
+    name: 'hideVolumes',
+    id: 'hideVolumes',
+    on: settings.hideVolumes,
+    errors: settings.getErrors('hideVolumes'),
+    warning: configWarning('hideVolumes', 'remote-sync')
+}) }}

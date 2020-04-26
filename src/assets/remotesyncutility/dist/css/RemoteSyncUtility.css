@@ -6,8 +6,8 @@
   position: relative;
 }
 
-#rb-utilities-database {
-  margin-bottom: 25px;
+.rb-utilities-section:nth-child(2) {
+  margin-top: 25px;
 }
 
 .rb-utilities-table {
