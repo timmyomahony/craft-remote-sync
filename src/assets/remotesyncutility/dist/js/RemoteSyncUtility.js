@@ -10,6 +10,7 @@
       this.$form = $("form", this.$element);
       this.$table = $("table", this.$element);
       this.$tbody = $("tbody", this.$table);
+      this.$showAllRow = $(".show-all-row", this.$tbody);
       this.$submit = $("input.submit", this.$form);
       this.$loadingOverlay = $(".rb-utilities-overlay", this.$element);
 
@@ -26,6 +27,17 @@
       this.csrfToken = this.$form.find('input[name="CRAFT_CSRF_TOKEN"]').val();
 
       this.$form.on("submit", this.push.bind(this));
+
+      // Show all rows
+      this.$showAllRow.find("a").on(
+        "click",
+        function (e) {
+          this.$showAllRow.hide();
+          this.$table.removeClass("rb-utilities-table--collapsed");
+          e.preventDefault();
+        }.bind(this)
+      );
+
       this.list();
     },
 
@@ -65,48 +77,52 @@
     updateTable: function (backups, error) {
       if (error) {
         this.showTableErrors();
-      } else if (backups.length > 0) {
-        for (var i = 0; i < backups.length; i++) {
-          var $row = this.$tbody.find(".template-row").clone();
-          var $td = $row.find("td");
-          $row.removeClass("template-row default-row");
-          if (i > 0) {
-            $row.removeClass("first");
-          }
-          $td.text(backups[i].label);
-          $td.attr("title", backups[i].value);
-          $td.attr("data-filename", backups[i].value);
-          if (i === 0) {
-            $td.append($("<span>").text("latest"));
-          }
-
-          var $pullButton = $("<button>")
-            .addClass("btn small")
-            .attr("title", "Pull and restore this remote database")
-            .text("Pull & Restore");
-          var $deleteButton = $("<button>")
-            .addClass("btn small")
-            .attr("title", "Delete this remote database")
-            .text("Delete");
-
-          this.addListener(
-            $pullButton,
-            "click",
-            this.pull.bind(this, backups[i].value)
-          );
-          this.addListener(
-            $deleteButton,
-            "click",
-            this.delete.bind(this, backups[i].value)
-          );
-
-          $row.append($("<td>").addClass("thin").append($pullButton));
-          $row.append($("<td>").addClass("thin").append($deleteButton));
-          this.$tbody.append($row);
-        }
-      } else {
-        this.showTableNoResults();
+        return false;
       }
+
+      if (backups.length <= 0) {
+        this.showTableNoResults();
+        return false;
+      }
+
+      // Backups are ordered newest to oldest ([0] = most recent) but we
+      // prepend them instead of append them to make it easier to style
+      for (var i = backups.length - 1; i >= 0; i--) {
+        var $row = this.$tbody
+          .find(".template-row")
+          .clone()
+          .removeClass("template-row default-row");
+
+        var $td = $row.find("td:first");
+        $td.text(backups[i].label);
+        $td.attr("title", backups[i].value);
+        $td.attr("data-filename", backups[i].value);
+
+        if (i === 0) {
+          $td.append($("<span>").text("latest"));
+        } else {
+          $row.removeClass("first");
+        }
+
+        this.addListener(
+          $row.find(".pull-button"),
+          "click",
+          this.pull.bind(this, backups[i].value)
+        );
+        this.addListener(
+          $row.find(".delete-button"),
+          "click",
+          this.delete.bind(this, backups[i].value)
+        );
+
+        this.$tbody.prepend($row);
+      }
+
+      if (backups.length > 3) {
+        this.$showAllRow.show();
+      }
+
+      return true;
     },
 
     /**

@@ -14,14 +14,16 @@
   margin-bottom: 10px;
 }
 
+/* Hide Craft's default hover background on table rows */
 table.data.rb-utilities-table tbody tr:not(.disabled):hover th,
 table.data.rb-utilities-table tbody tr:not(.disabled):hover td {
   background-color: transparent;
 }
 
-/* Hide template rows and collapsed rows*/
-.rb-utilities-table .default-row,
-.rb-utilities-table--collapsed tbody tr:not(:first-child) {
+/* Hide template rows and collapsed rows */
+.rb-utilities-table tr.default-row,
+.rb-utilities-table.rb-utilities-table--collapsed
+  tr:not(.default-row):nth-child(n + 4) {
   display: none;
 }
 
@@ -53,6 +55,15 @@ table.data.rb-utilities-table tbody tr:not(.disabled):hover td {
   margin-right: 10px;
 }
 
+/* "Show All" row */
+.rb-utilities-table tbody tr.show-all-row td {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.rb-utilities-table tr.show-all-row td a {
+  font-size: 12px;
+}
+
 .rb-utilities-submit {
   display: flex;
   justify-content: flex-start;
@@ -60,6 +71,7 @@ table.data.rb-utilities-table tbody tr:not(.disabled):hover td {
   position: relative;
 }
 
+/* Small status spinner */
 .rb-utilities-submit .utility-status {
   width: 100px;
   margin-left: 20px;
