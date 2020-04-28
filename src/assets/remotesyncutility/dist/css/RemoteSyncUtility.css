@@ -6,24 +6,45 @@
   position: relative;
 }
 
-#rb-utilities-database {
-  margin-bottom: 25px;
+.rb-utilities-section:nth-child(2) {
+  margin-top: 25px;
 }
 
 .rb-utilities-table {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.rb-utilities-table .default-row {
+/* Hide Craft's default hover background on table rows */
+table.data.rb-utilities-table tbody tr:not(.disabled):hover th,
+table.data.rb-utilities-table tbody tr:not(.disabled):hover td {
+  background-color: transparent;
+}
+
+/* Hide template rows and collapsed rows */
+.rb-utilities-table tr.default-row,
+.rb-utilities-table.rb-utilities-table--collapsed
+  tr:not(.default-row):nth-child(n + 4) {
   display: none;
 }
 
 .rb-utilities-table tbody tr td:first-child {
   display: flex;
   align-items: center;
-  cursor: help;
+  padding-left: 0;
 }
 
+/* "Latest" bubble */
+.rb-utilities-table tbody tr td:first-child span {
+  border: 1px solid #9aa5b1;
+  margin: 2px 0 0 10px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 1;
+  color: #9aa5b1;
+}
+
+/* Add green circle to the title */
 .rb-utilities-table tbody tr:not(.default-row) td:first-child:before {
   display: block;
   height: 10px;
@@ -34,6 +55,15 @@
   margin-right: 10px;
 }
 
+/* "Show All" row */
+.rb-utilities-table tbody tr.show-all-row td {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.rb-utilities-table tr.show-all-row td a {
+  font-size: 12px;
+}
+
 .rb-utilities-submit {
   display: flex;
   justify-content: flex-start;
@@ -41,6 +71,7 @@
   position: relative;
 }
 
+/* Small status spinner */
 .rb-utilities-submit .utility-status {
   width: 100px;
   margin-left: 20px;

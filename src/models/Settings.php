@@ -7,6 +7,7 @@ use craft\base\Model;
 class Settings extends Model
 {
     public $enabled = true;
+
     public $cloudProvider = 's3';
     public $s3AccessKey;
     public $s3SecretKey;
@@ -17,9 +18,16 @@ class Settings extends Model
     public $useQueue = false;
     public $keepEmergencyBackup = true;
 
+    public $prune = false;
+    public $pruneLimit = 10;
+
+    public $hideDatabases = false;
+    public $hideVolumes = false;
+
     public function rules(): array
     {
         return [
+            // Provider details should only run when that provider is selected
             [
                 ['s3AccessKey', 's3SecretKey', 's3BucketName', 's3RegionName'],
                 'required',
@@ -32,10 +40,33 @@ class Settings extends Model
                 'string'
             ],
             [
-                ['useQueue', 'keepEmergencyBackup'],
+                ['useQueue', 'keepEmergencyBackup', 'hideDatabases', 'hideVolumes', 'prune'],
                 'boolean'
-            ]
+            ],
+            [
+                'pruneLimit', 'integer', 'min' => 1
+            ],
+            [
+                'pruneLimit', 'required', 'when' => function ($model) {
+                    return $model->prune;
+                }
+            ],
+            // This seems like a poor API design in Yii 2. We want to show a 
+            // validation when a user hides both the database and volumes. You
+            //  can't create custom validators that run on two separate fields
+            // (as it would run twice)
+            //
+            // https://www.yiiframework.com/doc/guide/2.0/en/input-validation#multiple-attributes-validation
+            ['hideDatabases', 'validateHideRules'],
         ];
+    }
+
+    public function validateHideRules($attribute, $params)
+    {
+        if ($this->hideDatabases && $this->hideVolumes) {
+            $this->addError('hideDatabases', 'You cannot hide both databases and volumes');
+            $this->addError('hideVolumes', 'You cannot hide both databases and volumes');
+        }
     }
 
     public function configured(): bool

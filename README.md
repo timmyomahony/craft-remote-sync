@@ -55,13 +55,20 @@ Alternatively, if you want to configure the plugin on a per-environment basis, y
 return [
     '*' => [
         'cloudProvider' => 's3',
-        //...
+        // Provider-specific details can be added here
+        // ...
         'useQueue' => false,
+				'keepEmergencyBackup' => true,
+        'prune' => false,
+        'pruneLimit' => 10,
+        'hideDatabases' => true,
+        'hideVolumes' => true
     ],
     'dev' => [],
     'staging' => [],
     'production' => [],
 ];
+
 ```
 
 Whichever approach you choose, you need to first configure your remote provider settings.
@@ -110,12 +117,14 @@ There are also console commands available for creating, pushing and pulling back
 - remote-sync/database                      Manage remote databases
     remote-sync/database/delete             Delete a remote database
     remote-sync/database/list               List remote databases
+    remote-sync/database/prune              Prune remote database files
     remote-sync/database/pull               Pull remote database and restore it locally
     remote-sync/database/push               Push local database to remote destination
 
 - remote-sync/volume                        Manage remote volumes
     remote-sync/volume/delete               Delete a remote volume
     remote-sync/volume/list                 List remote volumes
+    remote-sync/volume/prune                Prune remote volume files
     remote-sync/volume/pull                 Pull remote volume and restore it locally
     remote-sync/volume/push                 Push local volume to remote destination
 ```
@@ -126,9 +135,9 @@ There are also console commands available for creating, pushing and pulling back
 
 You can optionally use Craft's built-in queue to sync files. This is useful when they are large and you don't want to have to wait on the Control Panel interface every time you backup. Instead, the files will be added to the queue and completed in the background.
 
-You can enable this via the "Use Queue" lightswitch in the settings or via the `userQueue` settig in your config.
+You can enable this via the "Use Queue" lightswitch in the settings or via the `userQueue` setting in your config.
 
-#### ⚠️ CLI commands and the queue
+#### ⚠️ CLI commands
 
 The CLI commands ignore the queue setting. In other words, they will always run synchrously. This is by design as it's likely you will want to see the results of these operations if they are part of your crontab or deployment script.
 
@@ -140,6 +149,27 @@ This is a last resort in case you accidently pull and restore something you didn
 
 - `storage/sync/emergency-backup.sql` (database)
 - `storage/sync/emergency-backup.zip` (volumes)
+
+### Pruning
+
+![Craft Remote Sync Utilities Screenshot](resources/img/pruning-screenshot.png)
+
+When enabled, "old" synced files will be automatically deleted when you push new files to the remote provider. This allows you to keep the number of remote files manageable (therefore keeping your costs down).
+
+The "prune limit" controls how many of the most recent files you keep when pushing new files. For example, if the limit is 3 then Remote Sync will always keep the latest 3 remote database files as well as the latest 3 remote volume files. Any older files will be deleted.
+
+When enabled, pruning will happen automatically while using the utilities interface. 
+
+####⚠️ CLI commands
+
+You can prune the remote files using two CLI console commands:
+
+```sh
+./craft remote-sync/database/prune
+./craft remote-sync/volume/prune
+```
+
+Just like the queue setting above, pruning will not be automatically run when you are using the command line to push volumes, so you should run the prune command as part of any automated syncing scripts.
 
 ## Functionality
 
@@ -157,7 +187,7 @@ Which includes:
 - Random 10 character string
 - Craft version
 
-It's important not to manually rename these files as the plugin relies on this structure.
+It's important not to manually rename these files as the plugin relies on this structure. Like the queue setting above, pruning will not automatically happen when running console commands.
 
 ## Pairing with Craft Remote Backup
 

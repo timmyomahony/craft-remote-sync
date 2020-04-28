@@ -121,6 +121,29 @@
 <hr>
 
 {{ forms.lightswitchField({
+    label: "Prune Files"|t('remote-sync'),
+    instructions: "Delete older remote files when new files pushed"|t('remote-sync'),
+    name: 'prune',
+    id: 'prune',
+    on: settings.prune,
+    errors: settings.getErrors('prune'),
+    warning: configWarning('prune', 'remote-sync')
+}) }}
+
+{{ forms.textField({
+    label: "Prune limit"|t('remote-sync'),
+    type: "number",
+    instructions: "The number of most recent files to keep when pruning."|t('remote-sync'),
+    name: 'pruneLimit',
+    id: 'pruneLimit',
+    value: settings.pruneLimit,
+    errors: settings.getErrors('pruneLimit'),
+    warning: configWarning('pruneLimit', 'remote-sync')
+}) }}
+
+<hr>
+
+{{ forms.lightswitchField({
     label: "Keep an Emergency Backup"|t('remote-sync'),
     instructions: "Create an emergency backup before pulling & restoring."|t('remote-sync'),
     name: 'keepEmergencyBackup',
@@ -128,4 +151,26 @@
     on: settings.keepEmergencyBackup,
     errors: settings.getErrors('keepEmergencyBackup'),
     warning: configWarning('keepEmergencyBackup', 'remote-sync')
+}) }}
+
+<hr>
+
+{{ forms.lightswitchField({
+    label: "Hide Databases"|t('remote-sync'),
+    instructions: "Hide the database section altogether from the utilities page"|t('remote-sync'),
+    name: 'hideDatabases',
+    id: 'hideDatabases',
+    on: settings.hideDatabases,
+    errors: settings.getErrors('hideDatabases'),
+    warning: configWarning('hideDatabases', 'remote-sync')
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Hide Volumes"|t('remote-sync'),
+    instructions: "Hide the volumes section altogether from the utiltiies page"|t('remote-sync'),
+    name: 'hideVolumes',
+    id: 'hideVolumes',
+    on: settings.hideVolumes,
+    errors: settings.getErrors('hideVolumes'),
+    warning: configWarning('hideVolumes', 'remote-sync')
 }) }}

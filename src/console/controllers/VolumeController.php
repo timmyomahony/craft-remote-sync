@@ -79,6 +79,38 @@ class VolumeController extends Controller
     }
 
     /**
+     * Prune remote volume files
+     */
+    public function actionPrune()
+    {
+        try {
+            $this->requirePluginEnabled();
+            $this->requirePluginConfigured();
+
+            if (!RemoteSync::getInstance()->getSettings()->prune) {
+                $this->stderr("Pruning disabled. Please enable via the Remote Sync control panel settings" . PHP_EOL, Console::FG_YELLOW);
+                return ExitCode::CONFIG;
+            } else {
+                $filenames = RemoteSync::getInstance()->remotesync->pruneVolumes();
+                if (count($filenames) <= 0) {
+                    $this->stdout("No volume files deleted" . PHP_EOL, Console::FG_YELLOW);
+                } else {
+                    $this->stdout("Deleted volume files:" . PHP_EOL, Console::FG_GREEN);
+                    foreach ($filenames as $filename) {
+                        $this->stdout(" " . $filename . PHP_EOL);
+                    }
+                }
+                return ExitCode::OK;
+            }
+        } catch (\Exception $e) {
+            Craft::$app->getErrorHandler()->logException($e);
+            $this->stderr('Error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+        return ExitCode::OK;
+    }
+
+    /**
      * Pull remote volume and restore it locally
      */
     public function actionPull($filename)

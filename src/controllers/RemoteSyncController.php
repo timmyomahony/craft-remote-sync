@@ -12,6 +12,8 @@ use weareferal\RemoteSync\queue\PullDatabaseJob;
 use weareferal\RemoteSync\queue\PullVolumeJob;
 use weareferal\RemoteSync\queue\PushDatabaseJob;
 use weareferal\RemoteSync\queue\PushVolumeJob;
+use weareferal\RemoteSync\queue\PruneDatabasesJob;
+use weareferal\RemoteSync\queue\PruneVolumesJob;
 use weareferal\RemoteSync\queue\DeleteDatabaseJob;
 use weareferal\RemoteSync\queue\DeleteVolumeJob;
 
@@ -75,15 +77,25 @@ class RemoteSyncController extends Controller
         $this->requirePluginEnabled();
         $this->requirePluginConfigured();
 
-        try {
-            $useQueue = RemoteSync::getInstance()->getSettings()->useQueue;
+        $settings = RemoteSync::getInstance()->getSettings();
+        $service = RemoteSync::getInstance()->remotesync;
+        $queue = Craft::$app->queue;
 
-            if ($useQueue) {
-                Craft::$app->queue->push(new PushDatabaseJob());
+        try {
+            if ($settings->useQueue) {
+                $queue->push(new PushDatabaseJob());
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                RemoteSync::getInstance()->remotesync->pushDatabase();
+                $service->pushDatabase();
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Database pushed'));
+            }
+
+            if ($settings->prune) {
+                if ($settings->useQueue) {
+                    $queue->push(new PruneDatabasesJob());
+                } else {
+                    $service->pruneDatabases();
+                }
             }
         } catch (\Exception $e) {
             Craft::$app->getErrorHandler()->logException($e);
@@ -103,15 +115,25 @@ class RemoteSyncController extends Controller
         $this->requirePluginEnabled();
         $this->requirePluginConfigured();
 
-        try {
-            $useQueue = RemoteSync::getInstance()->getSettings()->useQueue;
+        $settings = RemoteSync::getInstance()->getSettings();
+        $service = RemoteSync::getInstance()->remotesync;
+        $queue = Craft::$app->queue;
 
-            if ($useQueue) {
-                Craft::$app->queue->push(new PushVolumeJob());
+        try {
+            if ($settings->useQueue) {
+                $queue->push(new PushVolumeJob());
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                RemoteSync::getInstance()->remotesync->pushVolumes();
+                $service->pushVolumes();
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Volumes pushed'));
+            }
+
+            if ($settings->prune) {
+                if ($settings->useQueue) {
+                    $queue->push(new PruneVolumesJob());
+                } else {
+                    $service->pruneVolumes();
+                }
             }
         } catch (\Exception $e) {
             Craft::$app->getErrorHandler()->logException($e);

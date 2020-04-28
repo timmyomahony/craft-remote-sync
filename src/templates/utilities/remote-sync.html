@@ -1,4 +1,5 @@
 {% import "_includes/forms" as forms %}
+
 {% if not settings.configured() %}
     <div class="field">
         <p class="warning">{{ 'Plugin settings have not been configured yet'|t('remote-sync') }}</p>
@@ -23,40 +24,41 @@
             }, 3000);
         </script>
     {% endif %}
-
     <div class="rb-utilities">
-        {% include 'remote-sync/utilities/_includes/_remote-sync-section' with {
-            label: 'Database',
-            labelPlural: 'Databases',
-            pullMessage: ("Are you sure you want to pull & restore this database? This is destructive and will replace your local database!" | t),
-            deleteMessage: ("Are you sure you want to delete this remote database? This will not affect your local database" | t),
-            icon: 'database',
-            id: 'rb-utilities-database',
-            listAction: 'remote-sync/remote-sync/list-databases',
-            pushAction: 'remote-sync/remote-sync/push-database',
-            pullAction: 'remote-sync/remote-sync/pull-database',
-            deleteAction: 'remote-sync/remote-sync/delete-database',
-            disabled: false
-        } %}
-
-        {% embed 'remote-sync/utilities/_includes/_remote-sync-section' with {
-            label: 'Volume',
-            labelPlural: 'Volumes',
-            pullMessage: ("Are you sure you want to pull & restore these volumes? This is destructive and will replace your local volumes!" | t),
-            deleteMessage: ("Are you sure you want to delete these remote volumes? This will not affect your local volumes" | t),
-            icon: 'asset',
-            id: 'rb-utilities-volumes',
-            listAction: 'remote-sync/remote-sync/list-volumes',
-            pushAction: 'remote-sync/remote-sync/push-volume',
-            pullAction: 'remote-sync/remote-sync/pull-volume',
-            deleteAction: 'remote-sync/remote-sync/delete-volume',
-            disabled: not showVolumes
-        } %}
-            {% block message %}
-                {% if not showVolumes %}<p class="light">{{ 'No volumes created yet'|t('remote-sync') }}</p>{% endif %}
-            {% endblock %}
-        {% endembed %}
-
+        {% if not settings.hideDatabases %}
+            {% include 'remote-sync/utilities/_includes/_remote-sync-section' with {
+                label: 'Database',
+                labelPlural: 'Databases',
+                pullMessage: ("Are you sure you want to pull & restore this database? This is destructive and will replace your local database!" | t),
+                deleteMessage: ("Are you sure you want to delete this remote database? This will not affect your local database" | t),
+                icon: 'database',
+                id: 'rb-utilities-database',
+                listAction: 'remote-sync/remote-sync/list-databases',
+                pushAction: 'remote-sync/remote-sync/push-database',
+                pullAction: 'remote-sync/remote-sync/pull-database',
+                deleteAction: 'remote-sync/remote-sync/delete-database',
+                disabled: false
+            } %}
+        {% endif %}
+        {% if not settings.hideVolumes %}
+            {% embed 'remote-sync/utilities/_includes/_remote-sync-section' with {
+                label: 'Volume',
+                labelPlural: 'Volumes',
+                pullMessage: ("Are you sure you want to pull & restore these volumes? This is destructive and will replace your local volumes!" | t),
+                deleteMessage: ("Are you sure you want to delete these remote volumes? This will not affect your local volumes" | t),
+                icon: 'asset',
+                id: 'rb-utilities-volumes',
+                listAction: 'remote-sync/remote-sync/list-volumes',
+                pushAction: 'remote-sync/remote-sync/push-volume',
+                pullAction: 'remote-sync/remote-sync/pull-volume',
+                deleteAction: 'remote-sync/remote-sync/delete-volume',
+                disabled: not volumesConfigured
+            } %}
+                {% block message %}
+                    {% if not volumesConfigured %}<p class="light">{{ 'No volumes created yet'|t('remote-sync') }}</p>{% endif %}
+                {% endblock %}
+            {% endembed %}
+        {% endif %}
         {% if queueActive %}
             <div class="rb-utilities-guard">&nbsp;</div>
         {% endif %}
