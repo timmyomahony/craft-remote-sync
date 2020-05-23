@@ -28,3 +28,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - "Latest" badge on utilties page to easily identify the most recent synced file
 - A "show more" dropdown when there are > 3 synced files
 - A "hide" setting to remove either databases or volumes from the utilities panel
+
+## 1.2.1 - 2020-05-23
+
+### Changed
+
+- Fixed issue (#15) with restoring via queue where a new database backup would be pushed automatically (and incorrectly)
+- Fixed issue (#16) where not being logged out automatically via Ajax when restoring via the queue

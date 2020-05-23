@@ -1,3 +1,5 @@
+craft-remote-sync.code-workspace
+
 # CRAFT ENVIRONMENT
 .env.php
 .env.sh

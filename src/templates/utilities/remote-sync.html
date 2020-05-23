@@ -1,6 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-{% if not settings.configured() %}
+{% if not settings.isConfigured() %}
     <div class="field">
         <p class="warning">{{ 'Plugin settings have not been configured yet'|t('remote-sync') }}</p>
     </div>
@@ -11,15 +11,25 @@
         </div>
         <script>
             // Reload the page when the queue empties
-            setInterval(function() {
-                $.get({
+            var timer = setInterval(function() {
+                $.ajax({
+                    method: 'get',
                     url: Craft.getActionUrl("queue/get-job-info"),
                     dataType: "json",
-                    success: function (response) {
-                        if (response['total'] <= 0) {
+                    success: function (data, status) {
+                        if (data['total'] <= 0) {
+                            window.clearInterval(timer);
                             window.location.reload();
                         }
                     },
+                    error: function (xhr, status, error) {
+                        if (xhr.status === 403) {
+                            window.clearInterval(timer);
+                            window.location.reload();
+                        } else {
+                            console.error(xhr);
+                        }
+                    }
                 });
             }, 3000);
         </script>
@@ -29,7 +39,7 @@
             {% include 'remote-sync/utilities/_includes/_remote-sync-section' with {
                 label: 'Database',
                 labelPlural: 'Databases',
-                pullMessage: ("Are you sure you want to pull & restore this database? This is destructive and will replace your local database!" | t),
+                pullMessage: ("Are you sure you want to pull & restore this database? This is destructive and will replace your local database. You will also be automatically logged out." | t),
                 deleteMessage: ("Are you sure you want to delete this remote database? This will not affect your local database" | t),
                 icon: 'database',
                 id: 'rb-utilities-database',
@@ -44,7 +54,7 @@
             {% embed 'remote-sync/utilities/_includes/_remote-sync-section' with {
                 label: 'Volume',
                 labelPlural: 'Volumes',
-                pullMessage: ("Are you sure you want to pull & restore these volumes? This is destructive and will replace your local volumes!" | t),
+                pullMessage: ("Are you sure you want to pull & restore these volumes? This is destructive and will replace your local volumes." | t),
                 deleteMessage: ("Are you sure you want to delete these remote volumes? This will not affect your local volumes" | t),
                 icon: 'asset',
                 id: 'rb-utilities-volumes',

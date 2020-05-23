@@ -23,7 +23,7 @@ class VolumeController extends Controller
 
     public function requirePluginConfigured()
     {
-        if (!RemoteSync::getInstance()->getSettings()->configured()) {
+        if (!RemoteSync::getInstance()->getSettings()->isConfigured()) {
             throw new \Exception('Remote Sync Plugin not correctly configured');
         }
     }

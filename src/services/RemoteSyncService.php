@@ -143,6 +143,13 @@ class RemoteSyncService extends Component
         $path = $this->getLocalDir() . DIRECTORY_SEPARATOR . $filename;
         $this->pull($filename, $path);
         Craft::$app->getDb()->restore($path);
+
+        # Clear any items in the restoreed database queue table
+        # See https://github.com/weareferal/craft-remote-sync/issues/16
+        if ($settings->useQueue) {
+            Craft::$app->queue->releaseAll();
+        }
+
         unlink($path);
     }
 
