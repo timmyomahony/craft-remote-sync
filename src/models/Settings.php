@@ -69,7 +69,7 @@ class Settings extends Model
         }
     }
 
-    public function configured(): bool
+    public function isConfigured(): bool
     {
         $vars = [
             $this->s3AccessKey,

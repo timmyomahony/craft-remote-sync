@@ -29,7 +29,7 @@ class RemoteSyncController extends Controller
 
     public function requirePluginConfigured()
     {
-        if (!RemoteSync::getInstance()->getSettings()->configured()) {
+        if (!RemoteSync::getInstance()->getSettings()->isConfigured()) {
             throw new BadRequestHttpException('Plugin is not correctly configured');
         }
     }

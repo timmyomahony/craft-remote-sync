@@ -27,7 +27,7 @@ class S3Provider extends RemoteSyncService implements Provider
         $settings = RemoteSync::getInstance()->settings;
         $s3BucketName = Craft::parseEnv($settings->s3BucketName);
         $s3BucketPrefix = Craft::parseEnv($settings->s3BucketPrefix);
-        $client = $this->getS3Client();
+        $client = $this->getClient();
         $kwargs = [
             'Bucket' => $s3BucketName,
         ];
@@ -76,7 +76,7 @@ class S3Provider extends RemoteSyncService implements Provider
     {
         $settings = RemoteSync::getInstance()->settings;
         $s3BucketName = Craft::parseEnv($settings->s3BucketName);
-        $client = $this->getS3Client();
+        $client = $this->getClient();
         $pathInfo = pathinfo($path);
 
         $key = $this->getAWSKey($pathInfo['basename']);
@@ -96,7 +96,7 @@ class S3Provider extends RemoteSyncService implements Provider
     {
         $settings = RemoteSync::getInstance()->settings;
         $s3BucketName = Craft::parseEnv($settings->s3BucketName);
-        $client = $this->getS3Client();
+        $client = $this->getClient();
         $key = $this->getAWSKey($key);
 
         try {
@@ -122,7 +122,7 @@ class S3Provider extends RemoteSyncService implements Provider
     {
         $settings = RemoteSync::getInstance()->settings;
         $s3BucketName = Craft::parseEnv($settings->s3BucketName);
-        $client = $this->getS3Client();
+        $client = $this->getClient();
         $key = $this->getAWSKey($key);
 
         $exists = $client->doesObjectExist($s3BucketName, $key);
@@ -163,7 +163,7 @@ class S3Provider extends RemoteSyncService implements Provider
      * @return S3Client The S3 client object
      * @since 1.0.0
      */
-    private function getS3Client(): S3Client
+    private function getClient(): S3Client
     {
         $settings = RemoteSync::getInstance()->settings;
         $s3AccessKey = Craft::parseEnv($settings->s3AccessKey);
