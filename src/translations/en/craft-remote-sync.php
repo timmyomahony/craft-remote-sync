@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'Craft Backup plugin loaded' => 'Craft Backup plugin loaded',
+    'Craft Sync plugin loaded' => 'Craft Sync plugin loaded',
 ];
