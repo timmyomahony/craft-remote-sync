@@ -36,12 +36,12 @@ class Settings extends Model
     public $dropboxAccessToken;
     public $dropboxFolder;
 
-    // DO Spaces
+    // Digital Ocean
     public $doAccessKey;
     public $doSecretKey;
     public $doRegionName;
-    public $doBucketName;
-    public $doBucketPath;
+    public $doSpacesName;
+    public $doSpacesPath;
 
     public $useQueue = false;
     public $keepEmergencyBackup = true;
@@ -90,7 +90,7 @@ class Settings extends Model
                 }
             ],
             [
-                ['doAccessKey', 'doSecretKey', 'doBucketName', 'doRegionName'],
+                ['doAccessKey', 'doSecretKey', 'doSpacesName', 'doRegionName'],
                 'required',
                 'when' => function ($model) {
                     return $model->cloudProvider == 'do' & $model->enabled == 1;
@@ -103,7 +103,7 @@ class Settings extends Model
                     'b2MasterKeyID', 'b2MasterAppKey', 'b2BucketName', 'b2BucketPath',
                     'googleClientId', 'googleClientSecret', 'googleProjectName', 'googleAuthRedirect', 'googleDriveFolderId',
                     'dropboxAppKey', 'dropboxSecretKey', 'dropboxAccessToken', 'dropboxFolder',
-                    'doAccessKey', 'doSecretKey', 'doBucketName', 'doRegionName', 'doBucketPath',
+                    'doAccessKey', 'doSecretKey', 'doSpacesName', 'doRegionName', 'doSpacesPath',
                 ],
                 'string'
             ],

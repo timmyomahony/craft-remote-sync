@@ -306,7 +306,7 @@
 <div class="provider provider-do">
     {{ forms.autosuggestField({
         label: "Digital Ocean Spaces Access Key"|t('remote-sync'),
-        instructions: "The access key associated with your IAM user"|t('remote-sync'),
+        instructions: "The Digital Ocean API access key"|t('remote-sync'),
         name: 'doAccessKey',
         id: 'doAccessKey',
         suggestEnvVars: true,
@@ -320,7 +320,7 @@
 
     {{ forms.autosuggestField({
         label: "Digital Ocean Spaces Secret Key",
-        instructions: "The secret key associated with your IAM user"|t('remote-sync'),
+        instructions: "The Digital Ocean API secret key"|t('remote-sync'),
         name: 'doSecretKey',
         id: 'doSecretKey',
         suggestEnvVars: true,
@@ -333,44 +333,44 @@
     }) }}
 
     {{ forms.autosuggestField({
-        label: "Digital Ocean Spaces Bucket Name"|t('remote-sync'),
-        instructions: "The name of the Spaces bucket you want to send files to"|t('remote-sync'),
-        name: 'doBucketName',
-        id: 'doBucketName',
+        label: "Digital Ocean Spaces Name"|t('remote-sync'),
+        instructions: "The name of the DO Space you want to send files to"|t('remote-sync'),
+        name: 'doSpacesName',
+        id: 'doSpacesName',
         suggestEnvVars: true,
         suggestAliases: true,
-        value: settings.doBucketName,
+        value: settings.doSpacesName,
         placeholder: "craft-sync",
         required: (settings.cloudProvider == 'do'),
-        errors: settings.getErrors('doBucketName'),
-        warning: configWarning('doBucketName', 'remote-sync')
+        errors: settings.getErrors('doSpacesName'),
+        warning: configWarning('doSpacesName', 'remote-sync')
     }) }}
 
     {{ forms.autosuggestField({
         label: "Digital Ocean Spaces Region Name"|t('remote-sync'),
-        instructions: "The AWS region your Spaces bucket is in"|t('remote-sync'),
+        instructions: "The region your DO Space is in"|t('remote-sync'),
         name: 'doRegionName',
         id: 'doRegionName',
         suggestEnvVars: true,
         suggestAliases: true,
         value: settings.doRegionName,
-        placeholder: "us-west-2",
+        placeholder: "fra1",
         required: (settings.cloudProvider == 'do'),
         errors: settings.getErrors('doRegionName'),
         warning: configWarning('doRegionName', 'remote-sync')
     }) }}
 
     {{ forms.autosuggestField({
-        label: "Digital Ocean Spaces Bucket Path"|t('remote-sync'),
-        instructions: "A path within your Spaces bucket to prefix your files with. Do not include a leading or trailing slash"|t('remote-sync'),
-        name: 'doBucketPath',
-        id: 'doBucketPath',
+        label: "Digital Ocean Spaces Path"|t('remote-sync'),
+        instructions: "A path within your DO Space to prefix your files with. Do not include a leading or trailing slash"|t('remote-sync'),
+        name: 'doSpacesPath',
+        id: 'doSpacesPath',
         suggestEnvVars: true,
         suggestAliases: true,
-        value: settings.doBucketPath,
+        value: settings.doSpacesPath,
         placeholder: "craft-sync/my-site",
-        errors: settings.getErrors('doBucketPath'),
-        warning: configWarning('doBucketPath', 'remote-sync')
+        errors: settings.getErrors('doSpacesPath'),
+        warning: configWarning('doSpacesPath', 'remote-sync')
     }) }}
 </div>
 
