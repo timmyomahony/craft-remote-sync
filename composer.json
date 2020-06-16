@@ -40,6 +40,7 @@
         "aws/aws-sdk-php": "Required for AWS usage",
         "gliterd/backblaze-b2": "Required for Backblaze usage",
         "kunalvarma05/dropbox-php-sdk": "Required for Dropbox usage",
-        "google/apiclient": "Required for Google Drive usage"
+        "google/apiclient": "Required for Google Drive usage",
+        "sociallydev/spaces-api": "Required for Digital Ocean Spaces usage"
     }
 }
