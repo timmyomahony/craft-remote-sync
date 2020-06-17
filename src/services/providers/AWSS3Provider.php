@@ -1,20 +1,47 @@
 <?php
 
-namespace weareferal\RemoteSync\services\providers;
+namespace weareferal\remotesync\services\providers;
 
 use Craft;
+
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 
-use weareferal\RemoteSync\RemoteSync;
-use weareferal\RemoteSync\services\Provider;
-use weareferal\RemoteSync\services\RemoteSyncService;
-use weareferal\RemoteSync\exceptions\ProviderException;
+use weareferal\remotesync\RemoteSync;
+use weareferal\remotesync\services\Provider;
+use weareferal\remotesync\services\RemoteSyncService;
+use weareferal\remotesync\exceptions\ProviderException;
 
 
-
-class S3Provider extends RemoteSyncService implements Provider
+class AWSS3Provider extends RemoteSyncService implements Provider
 {
+    /**
+     * Is Configured
+     * 
+     * @return boolean whether this provider is properly configured
+     * @since 1.1.0
+     */
+    public function isConfigured(): bool
+    {
+        $settings = RemoteSync::getInstance()->settings;
+        return isset($settings->s3AccessKey) &&
+            isset($settings->s3SecretKey) &&
+            isset($settings->s3RegionName);
+    }
+
+    /**
+     * Is Authenticated
+     * 
+     * @return boolean whether this provider is properly authenticated
+     * @todo currently we assume that if you have the keys you are 
+     * authenitcated. We should do a check here
+     * @since 1.1.0
+     */
+    public function isAuthenticated(): bool
+    {
+        return true;
+    }
+
     /**
      * Return S3 keys
      * 
@@ -22,24 +49,19 @@ class S3Provider extends RemoteSyncService implements Provider
      * @return array[string] An array of keys returned from S3
      * @since 1.0.0
      */
-    public function list($filterExtension = null): array
+    public function list($filterExtension): array
     {
         $settings = RemoteSync::getInstance()->settings;
         $s3BucketName = Craft::parseEnv($settings->s3BucketName);
-        $s3BucketPrefix = Craft::parseEnv($settings->s3BucketPrefix);
+        $s3BucketPath = Craft::parseEnv($settings->s3BucketPath);
         $client = $this->getClient();
         $kwargs = [
             'Bucket' => $s3BucketName,
         ];
-        if ($s3BucketPrefix) {
-            $kwargs['Prefix'] = $s3BucketPrefix;
+        if ($s3BucketPath) {
+            $kwargs['Prefix'] = $s3BucketPath;
         }
-
-        try {
-            $response = $client->listObjects($kwargs);
-        } catch (AwsException $exception) {
-            throw new ProviderException($this->createErrorMessage($exception));
-        }
+        $response = $client->listObjects($kwargs);
 
         $objects = $response['Contents'];
         if (!$objects) {
@@ -51,15 +73,8 @@ class S3Provider extends RemoteSyncService implements Provider
             array_push($keys, basename($object['Key']));
         }
 
-        // Filter by extension
         if ($filterExtension) {
-            $filteredKeys = [];
-            foreach ($keys as $key) {
-                if (substr($key, -strlen($filterExtension)) === $filterExtension) {
-                    array_push($filteredKeys, basename($key));
-                }
-            }
-            $keys = $filteredKeys;
+            return $this->filterByExtension($keys, $filterExtension);
         }
 
         return $keys;
@@ -69,7 +84,6 @@ class S3Provider extends RemoteSyncService implements Provider
      * Push a file path to S3
      *  
      * @param string $path The full filesystem path to file
-     * @return bool If the operation was successful
      * @since 1.0.0
      */
     public function push($path)
@@ -79,7 +93,7 @@ class S3Provider extends RemoteSyncService implements Provider
         $client = $this->getClient();
         $pathInfo = pathinfo($path);
 
-        $key = $this->getAWSKey($pathInfo['basename']);
+        $key = $this->getPrefixedKey($pathInfo['basename']);
 
         try {
             $client->putObject([
@@ -92,17 +106,22 @@ class S3Provider extends RemoteSyncService implements Provider
         }
     }
 
-    public function pull($key, $path)
+    /**
+     * Pull a remote S3 file
+     * 
+     * @since 1.0.0
+     */
+    public function pull($key, $localPath)
     {
         $settings = RemoteSync::getInstance()->settings;
         $s3BucketName = Craft::parseEnv($settings->s3BucketName);
         $client = $this->getClient();
-        $key = $this->getAWSKey($key);
+        $key = $this->getPrefixedKey($key);
 
         try {
             $client->getObject([
                 'Bucket' => $s3BucketName,
-                'SaveAs' => $path,
+                'SaveAs' => $localPath,
                 'Key' => $key,
             ]);
         } catch (AwsException $exception) {
@@ -115,7 +134,6 @@ class S3Provider extends RemoteSyncService implements Provider
     /**
      * Delete a remote S3 key
      * 
-     * @return bool Remote key was successfully deleted
      * @since 1.0.0
      */
     public function delete($key)
@@ -123,7 +141,7 @@ class S3Provider extends RemoteSyncService implements Provider
         $settings = RemoteSync::getInstance()->settings;
         $s3BucketName = Craft::parseEnv($settings->s3BucketName);
         $client = $this->getClient();
-        $key = $this->getAWSKey($key);
+        $key = $this->getPrefixedKey($key);
 
         $exists = $client->doesObjectExist($s3BucketName, $key);
         if (!$exists) {
@@ -147,12 +165,12 @@ class S3Provider extends RemoteSyncService implements Provider
      * @return string The prefixed key
      * @since 1.0.0
      */
-    private function getAWSKey($key): string
+    private function getPrefixedKey($key): string
     {
         $settings = RemoteSync::getInstance()->settings;
-        $s3BucketPrefix = Craft::parseEnv($settings->s3BucketPrefix);
-        if ($s3BucketPrefix) {
-            return $s3BucketPrefix . DIRECTORY_SEPARATOR . $key;
+        $s3BucketPath = Craft::parseEnv($settings->s3BucketPath);
+        if ($s3BucketPath) {
+            return $s3BucketPath . DIRECTORY_SEPARATOR . $key;
         }
         return $key;
     }

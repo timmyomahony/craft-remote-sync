@@ -1,21 +1,21 @@
 <?php
 
-namespace weareferal\RemoteSync\controllers;
+namespace weareferal\remotesync\controllers;
 
 use yii\web\BadRequestHttpException;
 
 use Craft;
 use craft\web\Controller;
 
-use weareferal\RemoteSync\RemoteSync;
-use weareferal\RemoteSync\queue\PullDatabaseJob;
-use weareferal\RemoteSync\queue\PullVolumeJob;
-use weareferal\RemoteSync\queue\PushDatabaseJob;
-use weareferal\RemoteSync\queue\PushVolumeJob;
-use weareferal\RemoteSync\queue\PruneDatabasesJob;
-use weareferal\RemoteSync\queue\PruneVolumesJob;
-use weareferal\RemoteSync\queue\DeleteDatabaseJob;
-use weareferal\RemoteSync\queue\DeleteVolumeJob;
+use weareferal\remotesync\RemoteSync;
+use weareferal\remotesync\queue\PullDatabaseJob;
+use weareferal\remotesync\queue\PullVolumeJob;
+use weareferal\remotesync\queue\PushDatabaseJob;
+use weareferal\remotesync\queue\PushVolumeJob;
+use weareferal\remotesync\queue\PruneDatabasesJob;
+use weareferal\remotesync\queue\PruneVolumesJob;
+use weareferal\remotesync\queue\DeleteDatabaseJob;
+use weareferal\remotesync\queue\DeleteVolumeJob;
 
 
 class RemoteSyncController extends Controller
@@ -29,7 +29,7 @@ class RemoteSyncController extends Controller
 
     public function requirePluginConfigured()
     {
-        if (!RemoteSync::getInstance()->getSettings()->isConfigured()) {
+        if (!RemoteSync::getInstance()->remotesync->isConfigured()) {
             throw new BadRequestHttpException('Plugin is not correctly configured');
         }
     }
