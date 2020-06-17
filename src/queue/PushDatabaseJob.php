@@ -10,7 +10,7 @@ class PushDatabaseJob extends BaseJob
 {
     public function execute($queue)
     {
-        RemoteSync::getInstance()->remotesync->pushDatabase();
+        RemoteSync::getInstance()->provider->pushDatabase();
     }
 
     protected function defaultDescription()

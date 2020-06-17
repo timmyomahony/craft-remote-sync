@@ -12,7 +12,7 @@ class DeleteVolumeJob extends BaseJob
 
     public function execute($queue)
     {
-        RemoteSync::getInstance()->remotesync->deleteVolume($this->filename);
+        RemoteSync::getInstance()->provider->deleteVolume($this->filename);
     }
 
     protected function defaultDescription()

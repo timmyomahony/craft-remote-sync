@@ -12,7 +12,7 @@ class PullVolumeJob extends BaseJob
 
     public function execute($queue)
     {
-        RemoteSync::getInstance()->remotesync->pullVolume($this->filename);
+        RemoteSync::getInstance()->provider->pullVolume($this->filename);
     }
 
     protected function defaultDescription()

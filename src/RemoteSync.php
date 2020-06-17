@@ -22,8 +22,9 @@ use yii\base\Event;
 
 use weareferal\remotesync\utilities\RemoteSyncUtility;
 use weareferal\remotesync\models\Settings;
-use weareferal\remotesync\services\RemoteSyncService;
 use weareferal\remotesync\assets\remotesyncsettings\RemoteSyncSettingAsset;
+
+use weareferal\remotecore\services\ProviderService;
 
 
 class RemoteSync extends Plugin
@@ -40,8 +41,9 @@ class RemoteSync extends Plugin
 
         self::$plugin = $this;
 
+        // via craft-remote-core
         $this->setComponents([
-            'remotesync' => RemoteSyncService::create($this->getSettings()->cloudProvider)
+            'provider' => ProviderService::create($this->getSettings())
         ]);
 
         // Register console commands
@@ -97,8 +99,8 @@ class RemoteSync extends Plugin
         $view->registerAssetBundle(RemoteSyncSettingAsset::class);
         $view->registerJs("new Craft.RemoteSyncSettings('main-form');");
 
-        $isAuthenticated = $this->remotesync->isAuthenticated();
-        $isConfigured = $this->remotesync->isConfigured();
+        $isAuthenticated = $this->provider->isAuthenticated();
+        $isConfigured = $this->provider->isConfigured();
 
         return $view->renderTemplate(
             'remote-sync/settings',

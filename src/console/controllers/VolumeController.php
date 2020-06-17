@@ -23,7 +23,7 @@ class VolumeController extends Controller
 
     public function requirePluginConfigured()
     {
-        if (!RemoteSync::getInstance()->remotesync->isConfigured()) {
+        if (!RemoteSync::getInstance()->provider->isConfigured()) {
             throw new \Exception('Remote Sync Plugin not correctly configured');
         }
     }
@@ -37,7 +37,7 @@ class VolumeController extends Controller
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
 
-            $results = RemoteSync::getInstance()->remotesync->listVolumes();
+            $results = RemoteSync::getInstance()->provider->listVolumes();
             if (count($results) <= 0) {
                 $this->stdout("No remote volumes" . PHP_EOL, Console::FG_YELLOW);
             } else {
@@ -63,7 +63,7 @@ class VolumeController extends Controller
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
 
-            $filename = RemoteSync::getInstance()->remotesync->pushVolumes();
+            $filename = RemoteSync::getInstance()->provider->pushVolumes();
             if (!$filename) {
                 $this->stdout("No remote volumes" . PHP_EOL, Console::FG_YELLOW);
             } else {
@@ -91,7 +91,7 @@ class VolumeController extends Controller
                 $this->stderr("Pruning disabled. Please enable via the Remote Sync control panel settings" . PHP_EOL, Console::FG_YELLOW);
                 return ExitCode::CONFIG;
             } else {
-                $filenames = RemoteSync::getInstance()->remotesync->pruneVolumes();
+                $filenames = RemoteSync::getInstance()->provider->pruneVolumes();
                 if (count($filenames) <= 0) {
                     $this->stdout("No volume files deleted" . PHP_EOL, Console::FG_YELLOW);
                 } else {
@@ -119,7 +119,7 @@ class VolumeController extends Controller
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
 
-            RemoteSync::getInstance()->remotesync->pullVolume($filename);
+            RemoteSync::getInstance()->provider->pullVolume($filename);
             $this->stdout("Pulled and restored remote volume:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout(" " . $filename . PHP_EOL);
         } catch (\Exception $e) {
@@ -139,7 +139,7 @@ class VolumeController extends Controller
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
 
-            RemoteSync::getInstance()->remotesync->deleteVolume($filename);
+            RemoteSync::getInstance()->provider->deleteVolume($filename);
             $this->stdout("Deleted remote volume:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout(" " . $filename . PHP_EOL);
         } catch (\Exception $e) {
