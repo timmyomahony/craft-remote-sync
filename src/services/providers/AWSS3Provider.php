@@ -13,32 +13,40 @@ use weareferal\remotesync\services\RemoteSyncService;
 use weareferal\remotesync\exceptions\ProviderException;
 
 
+/**
+ * AWS Provider
+ * 
+ * A provider for use with Amazon AWS S3. This class can also be used to
+ * implement other providers that use the S3 API footproint, like Digital
+ * Ocean.
+ */
 class AWSS3Provider extends RemoteSyncService implements Provider
 {
+    private $name = "AWS";
+
     /**
-     * Is Configured
+     * Provider is configured
      * 
      * @return boolean whether this provider is properly configured
      * @since 1.1.0
      */
     public function isConfigured(): bool
     {
-        $settings = RemoteSync::getInstance()->settings;
-        return isset($settings->s3AccessKey) &&
-            isset($settings->s3SecretKey) &&
-            isset($settings->s3RegionName);
+        $settings = $this->getSettings();
+        return isset($settings['accessKey']) &&
+            isset($settings['secretKey']) &&
+            isset($settings['regionName']);
     }
 
     /**
-     * Is Authenticated
+     * User is authenticated with the provider
      * 
-     * @return boolean whether this provider is properly authenticated
-     * @todo currently we assume that if you have the keys you are 
-     * authenitcated. We should do a check here
+     * @return boolean
      * @since 1.1.0
      */
     public function isAuthenticated(): bool
     {
+        // TODO: we should perform an actual authentication test
         return true;
     }
 
@@ -51,15 +59,13 @@ class AWSS3Provider extends RemoteSyncService implements Provider
      */
     public function list($filterExtension): array
     {
-        $settings = RemoteSync::getInstance()->settings;
-        $s3BucketName = Craft::parseEnv($settings->s3BucketName);
-        $s3BucketPath = Craft::parseEnv($settings->s3BucketPath);
+        $settings = $settings = $this->getSettings();
         $client = $this->getClient();
         $kwargs = [
-            'Bucket' => $s3BucketName,
+            'Bucket' => $settings['bucketName'],
         ];
-        if ($s3BucketPath) {
-            $kwargs['Prefix'] = $s3BucketPath;
+        if ($settings['bucketPath']) {
+            $kwargs['Prefix'] = $settings['bucketPath'];
         }
         $response = $client->listObjects($kwargs);
 
@@ -88,16 +94,14 @@ class AWSS3Provider extends RemoteSyncService implements Provider
      */
     public function push($path)
     {
-        $settings = RemoteSync::getInstance()->settings;
-        $s3BucketName = Craft::parseEnv($settings->s3BucketName);
+        $settings = $this->getSettings();
         $client = $this->getClient();
         $pathInfo = pathinfo($path);
-
         $key = $this->getPrefixedKey($pathInfo['basename']);
 
         try {
             $client->putObject([
-                'Bucket' => $s3BucketName,
+                'Bucket' => $settings['bucketName'],
                 'Key' => $key,
                 'SourceFile' => $path
             ]);
@@ -113,14 +117,13 @@ class AWSS3Provider extends RemoteSyncService implements Provider
      */
     public function pull($key, $localPath)
     {
-        $settings = RemoteSync::getInstance()->settings;
-        $s3BucketName = Craft::parseEnv($settings->s3BucketName);
+        $settings = $settings = $this->getSettings();
         $client = $this->getClient();
         $key = $this->getPrefixedKey($key);
 
         try {
             $client->getObject([
-                'Bucket' => $s3BucketName,
+                'Bucket' => $settings['bucketName'],
                 'SaveAs' => $localPath,
                 'Key' => $key,
             ]);
@@ -138,19 +141,17 @@ class AWSS3Provider extends RemoteSyncService implements Provider
      */
     public function delete($key)
     {
-        $settings = RemoteSync::getInstance()->settings;
-        $s3BucketName = Craft::parseEnv($settings->s3BucketName);
+        $settings = $this->getSettings();
         $client = $this->getClient();
         $key = $this->getPrefixedKey($key);
-
-        $exists = $client->doesObjectExist($s3BucketName, $key);
+        $exists = $client->doesObjectExist($settings['bucketName'], $key);
         if (!$exists) {
             throw new ProviderException("AWS key does not exist");
         }
 
         try {
             $client->deleteObject([
-                'Bucket' => $s3BucketName,
+                'Bucket' => $settings['bucketName'],
                 'Key'    => $key
             ]);
         } catch (AwsException $exception) {
@@ -167,10 +168,9 @@ class AWSS3Provider extends RemoteSyncService implements Provider
      */
     private function getPrefixedKey($key): string
     {
-        $settings = RemoteSync::getInstance()->settings;
-        $s3BucketPath = Craft::parseEnv($settings->s3BucketPath);
-        if ($s3BucketPath) {
-            return $s3BucketPath . DIRECTORY_SEPARATOR . $key;
+        $settings = $this->getSettings();
+        if ($settings['bucketPath']) {
+            return $settings['bucketPath'] . DIRECTORY_SEPARATOR . $key;
         }
         return $key;
     }
@@ -183,18 +183,49 @@ class AWSS3Provider extends RemoteSyncService implements Provider
      */
     private function getClient(): S3Client
     {
-        $settings = RemoteSync::getInstance()->settings;
-        $s3AccessKey = Craft::parseEnv($settings->s3AccessKey);
-        $s3SecretKey = Craft::parseEnv($settings->s3SecretKey);
-        $s3RegionName = Craft::parseEnv($settings->s3RegionName);
-        return S3Client::factory([
+        $settings = $this->getSettings();
+        $options = [
             'credentials' => array(
-                'key'    => $s3AccessKey,
-                'secret' => $s3SecretKey
+                'key'    => $settings['accessKey'],
+                'secret' => $settings['secretKey']
             ),
             'version' => 'latest',
-            'region'  => $s3RegionName
-        ]);
+            'region'  => $settings['regionName']
+        ];
+        $endpoint = $this->getEndpoint();
+        if ($endpoint) {
+            $options['endpoint'] = $endpoint;
+        }
+        return S3Client::factory($options);
+    }
+
+    /**
+     * Get endpoint
+     * 
+     * If using a non-AWS endpoint (like Digital Ocean) we specify the 
+     * endpoint used in the client here
+     */
+    protected function getEndpoint()
+    {
+        return null;
+    }
+
+    /**
+     * Get settings
+     * 
+     * This allows us to overwrite the class easily for other providers like
+     * Digital Ocean that use the exact same API
+     */
+    protected function getSettings()
+    {
+        $settings = RemoteSync::getInstance()->settings;
+        return [
+            'accessKey' => Craft::parseEnv($settings->s3AccessKey),
+            'secretKey' => Craft::parseEnv($settings->s3SecretKey),
+            'regionName' => Craft::parseEnv($settings->s3RegionName),
+            'bucketName' => Craft::parseEnv($settings->s3BucketName),
+            'bucketPath' => Craft::parseEnv($settings->s3BucketPath)
+        ];
     }
 
     /**
@@ -208,7 +239,7 @@ class AWSS3Provider extends RemoteSyncService implements Provider
     {
         Craft::$app->getErrorHandler()->logException($exception);
         $awsMessage = $exception->getAwsErrorMessage();
-        $message = "AWS Error";
+        $message = "{$this->name} Error";
         if ($awsMessage) {
             if (strpos($awsMessage, "The request signature we calculated does not match the signature you provided") !== false) {
                 $message = $message . ' (Check secret key)';

@@ -5,6 +5,7 @@ namespace weareferal\remotesync\services\providers;
 use Craft;
 
 use Google_Client;
+use Google_Exception;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
 
@@ -95,7 +96,13 @@ class GoogleDriveProvider extends RemoteSyncService implements Provider
             'q' => $q,
         );
 
-        $results = $service->files->listFiles($params);
+        try {
+            $results = $service->files->listFiles($params);
+        } catch (Google_Exception $exception) {
+            Craft::debug("Couldn't push Google Drive file", 'remote-sync');
+            Craft::debug($filterExtension, 'remote-sync');
+            throw new ProviderException($exception->getMessage());
+        }
 
         $filenames = [];
         foreach ($results as $result) {
@@ -109,64 +116,122 @@ class GoogleDriveProvider extends RemoteSyncService implements Provider
      * Push a file to Google Drive
      *  
      * @param string $path The full filesystem path to file
-     * @since 1.1.0
+     * @since 1.3.0
      */
-    public function push($path)
+    public function push($localPath)
     {
-        $mimeType = mime_content_type($path);
+        $mimeType = mime_content_type($localPath);
         $settings = RemoteSync::getInstance()->settings;
         $googleDriveFolderId = Craft::parseEnv($settings->googleDriveFolderId);
-
         $service = new Google_Service_Drive($this->getClient());
         $gFile = new Google_Service_Drive_DriveFile();
-        $gFile->setName(basename($path));
-
+        $gFile->setName(basename($localPath));
         # Upload to specified folder
         if ($googleDriveFolderId) {
             $gFile->setParents([$googleDriveFolderId]);
         }
-
         $service->files->create(
             $gFile,
-            array(
-                'data' => file_get_contents($path),
+            [
+                'data' => file_get_contents($localPath),
                 'mimeType' => $mimeType,
                 'uploadType' => 'multipart',
                 'supportsAllDrives' => true
-            )
+            ]
         );
     }
 
+    /**
+     * Download file
+     * 
+     * https://developers.google.com/drive/api/v3/reference/files/get
+     * 
+     * @param string $filename the filename to pull and restore
+     * @param string $localPath  the local absolute path to save the download
+     * @return boolean if download was successful
+     * @throws ProviderException if there was a Google API error downloading the file
+     * @throws ProviderException if there was an issue saving the file contents locally
+     * @since 1.3.0
+     */
     public function pull($filename, $localPath)
     {
+        $fileId = $this->getFileID($filename);
+        $service = new Google_Service_Drive($this->getClient());
+        $response = $service->files->get($fileId, [
+            'supportsAllDrives' => true,
+            'alt' => 'media'
+        ]);
+
+        try {
+            $out = fopen($localPath, "w+");
+            while (!$response->getBody()->eof()) {
+                fwrite($out, $response->getBody()->read(1024));
+            }
+            fclose($out);
+        } catch (\Exception $exception) {
+            // TODO make sure file deleted
+            throw new ProviderException("Couldn't save Google Drive file");
+        }
     }
 
     /**
      * Delete a remote Google Drive file
      * 
-     * @since 1.1.0
+     * https://developers.google.com/drive/api/v3/reference/files/delete
+     * 
+     * @param $filename string the filename to delete
+     * @return boolean if successful
+     * @throws ProviderException if there was an API error deleting the file
+     * @since 1.3.0
      */
     public function delete($filename)
+    {
+        $fileId = $this->getFileID($filename);
+        $service = new Google_Service_Drive($this->getClient());
+        $service->files->delete($fileId, [
+            'supportsAllDrives' => true
+        ]);
+    }
+
+    /**
+     * Get file ID
+     * 
+     * Search for the file by filename across all drives in Google Drive
+     * 
+     * https://developers.google.com/drive/api/v3/reference/files/list
+     * 
+     * @param $filename string the filename we are searching for
+     * @return string the Google Drive fileId of the found file
+     * @throws ProviderException if there was an API error finding the file
+     * @since 1.3.0
+     */
+    private function getFileID($filename)
     {
         $settings = RemoteSync::getInstance()->settings;
         $googleDriveFolderId = Craft::parseEnv($settings->googleDriveFolderId);
         $service = new Google_Service_Drive($this->getClient());
-
         $q = "name = '${filename}'";
         if ($googleDriveFolderId) {
             $q = "'${googleDriveFolderId}' in parents and " . $q;
         }
-
-        $params = array(
+        return $service->files->listFiles([
+            'corpora' => 'allDrives',
+            'includeItemsFromAllDrives' => true,
+            'supportsAllDrives' => true,
             'spaces' => 'drive',
             'q' => $q
-        );
-
-        $results = $service->files->listFiles($params);
-        $service->files->delete($results[0]->id);
+        ])[0]->id;
     }
 
-    public function getTokenPath()
+    /**
+     * Get token path
+     * 
+     * Return the absolute path to the saved Google API credential json file
+     * 
+     * @return string absolute path
+     * @since 1.3.0
+     */
+    public function getTokenPath(): string
     {
         return Craft::$app->path->getStoragePath()
             . DIRECTORY_SEPARATOR
@@ -177,10 +242,12 @@ class GoogleDriveProvider extends RemoteSyncService implements Provider
     }
 
     /**
+     * Get client
+     * 
      * Return a Google Drive client
      * 
      * @return Client The Google SDK client object
-     * @since 1.1.0
+     * @since 1.3.0
      */
     function getClient(): Google_Client
     {

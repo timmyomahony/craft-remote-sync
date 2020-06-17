@@ -12,6 +12,7 @@ use weareferal\remotesync\helpers\ZipHelper;
 
 use weareferal\remotesync\services\providers\AWSS3Provider;
 use weareferal\remotesync\services\providers\BackblazeB2Provider;
+use weareferal\remotesync\services\providers\DigitalOceanProvider;
 use weareferal\remotesync\services\providers\GoogleDriveProvider;
 use weareferal\remotesync\services\providers\DropboxProvider;
 
@@ -451,6 +452,8 @@ class RemoteSyncService extends Component
                 return GoogleDriveProvider::class;
             case "dropbox":
                 return DropboxProvider::class;
+            case "do":
+                return DigitalOceanProvider::class;
         }
     }
 }

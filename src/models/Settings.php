@@ -9,7 +9,7 @@ class Settings extends Model
     public $enabled = true;
 
     public $cloudProvider = 's3';
-    
+
     // AWS
     public $s3AccessKey;
     public $s3SecretKey;
@@ -35,6 +35,13 @@ class Settings extends Model
     public $dropboxSecretKey;
     public $dropboxAccessToken;
     public $dropboxFolder;
+
+    // Digital Ocean
+    public $doAccessKey;
+    public $doSecretKey;
+    public $doRegionName;
+    public $doSpacesName;
+    public $doSpacesPath;
 
     public $useQueue = false;
     public $keepEmergencyBackup = true;
@@ -83,13 +90,20 @@ class Settings extends Model
                 }
             ],
             [
+                ['doAccessKey', 'doSecretKey', 'doSpacesName', 'doRegionName'],
+                'required',
+                'when' => function ($model) {
+                    return $model->cloudProvider == 'do' & $model->enabled == 1;
+                }
+            ],
+            [
                 [
-                    'cloudProvider', 's3AccessKey', 's3SecretKey', 's3BucketName',
-                    's3RegionName', 's3BucketPath', 'b2MasterKeyID', 'b2MasterAppKey',
-                    'b2BucketName', 'b2BucketPath', 'googleClientId',
-                    'googleClientSecret', 'googleProjectName', 'googleAuthRedirect',
-                    'googleDriveFolderId', 'dropboxAppKey', 'dropboxSecretKey',
-                    'dropboxAccessToken', 'dropboxFolder'
+                    'cloudProvider',
+                    's3AccessKey', 's3SecretKey', 's3BucketName', 's3RegionName', 's3BucketPath',
+                    'b2MasterKeyID', 'b2MasterAppKey', 'b2BucketName', 'b2BucketPath',
+                    'googleClientId', 'googleClientSecret', 'googleProjectName', 'googleAuthRedirect', 'googleDriveFolderId',
+                    'dropboxAppKey', 'dropboxSecretKey', 'dropboxAccessToken', 'dropboxFolder',
+                    'doAccessKey', 'doSecretKey', 'doSpacesName', 'doRegionName', 'doSpacesPath',
                 ],
                 'string'
             ],
