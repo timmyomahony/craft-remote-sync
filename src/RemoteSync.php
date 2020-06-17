@@ -7,23 +7,21 @@
  * @copyright Copyright (c) 2020 Timmy O'Mahony
  */
 
-namespace weareferal\remotesync;
+namespace weareferal\RemoteSync;
 
 use Craft;
 use craft\base\Plugin;
 use craft\services\Utilities;
 use craft\events\RegisterComponentTypesEvent;
-use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\UserPermissions;
-use craft\web\UrlManager;
 
 use yii\base\Event;
 
-use weareferal\remotesync\utilities\RemoteSyncUtility;
-use weareferal\remotesync\models\Settings;
-use weareferal\remotesync\services\RemoteSyncService;
-use weareferal\remotesync\assets\remotesyncsettings\RemoteSyncSettingAsset;
+use weareferal\RemoteSync\utilities\RemoteSyncUtility;
+use weareferal\RemoteSync\models\Settings;
+use weareferal\RemoteSync\services\RemoteSyncService;
+use weareferal\RemoteSync\assets\RemoteSyncsettings\RemoteSyncSettingAsset;
 
 
 class RemoteSync extends Plugin
@@ -46,7 +44,7 @@ class RemoteSync extends Plugin
 
         // Register console commands
         if (Craft::$app instanceof ConsoleApplication) {
-            $this->controllerNamespace = 'weareferal\remotesync\console\controllers';
+            $this->controllerNamespace = 'weareferal\RemoteSync\console\controllers';
         }
 
         // Register permissions
@@ -55,7 +53,7 @@ class RemoteSync extends Plugin
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function (RegisterUserPermissionsEvent $event) {
                 $event->permissions['Remote Sync'] = [
-                    'remotesync' => [
+                    'remote-sync' => [
                         'label' => 'Push and pull/restore database and volume assets',
                     ],
                 ];
@@ -72,18 +70,6 @@ class RemoteSync extends Plugin
                 }
             );
         }
-
-        // Extra urls
-        if ($this->getSettings()->cloudProvider == "google") {
-            Event::on(
-                UrlManager::class,
-                UrlManager::EVENT_REGISTER_CP_URL_RULES,
-                function (RegisterUrlRulesEvent $event) {
-                    $event->rules['remote-sync/google-drive/auth'] = 'remote-sync/google-drive/auth';
-                    $event->rules['remote-sync/google-drive/auth-redirect'] = 'remote-sync/google-drive/auth-redirect';
-                }
-            );
-        }
     }
 
     protected function createSettingsModel(): Settings
@@ -96,16 +82,10 @@ class RemoteSync extends Plugin
         $view = Craft::$app->getView();
         $view->registerAssetBundle(RemoteSyncSettingAsset::class);
         $view->registerJs("new Craft.RemoteSyncSettings('main-form');");
-
-        $isAuthenticated = $this->remotesync->isAuthenticated();
-        $isConfigured = $this->remotesync->isConfigured();
-
         return $view->renderTemplate(
             'remote-sync/settings',
             [
-                'settings' => $this->getSettings(),
-                'isConfigured' => $isConfigured,
-                'isAuthenticated' => $isAuthenticated
+                'settings' => $this->getSettings()
             ]
         );
     }

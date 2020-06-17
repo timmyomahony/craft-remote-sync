@@ -1,6 +1,6 @@
 <?php
 
-namespace weareferal\remotesync\helpers;
+namespace weareferal\RemoteSync\helpers;
 
 use Craft;
 use ZipArchive;

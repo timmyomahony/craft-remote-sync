@@ -1,6 +1,6 @@
 <?php
 
-namespace weareferal\remotesync\exceptions;
+namespace weareferal\RemoteSync\exceptions;
 
 class ProviderException extends \Exception
 {
