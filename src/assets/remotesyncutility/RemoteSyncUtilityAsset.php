@@ -1,6 +1,6 @@
 <?php
 
-namespace weareferal\remotesync\assets\remotesyncutility;
+namespace weareferal\RemoteSync\assets\RemoteSyncutility;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;

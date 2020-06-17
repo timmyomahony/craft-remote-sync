@@ -85,7 +85,7 @@
         return false;
       }
 
-      // Files are ordered newest to oldest ([0] = most recent) but we
+      // Backups are ordered newest to oldest ([0] = most recent) but we
       // prepend them instead of append them to make it easier to style
       for (var i = backups.length - 1; i >= 0; i--) {
         var $row = this.$tbody

@@ -1,32 +1,26 @@
 <?php
 
-namespace weareferal\remotesync\services;
+namespace weareferal\RemoteSync\services;
 
 use yii\base\Component;
 use Craft;
 use Craft\helpers\FileHelper;
 use Craft\helpers\StringHelper;
 
-use weareferal\remotesync\RemoteSync;
-use weareferal\remotesync\helpers\ZipHelper;
+use weareferal\RemoteSync\RemoteSync;
+use weareferal\RemoteSync\services\providers\S3Provider;
+use weareferal\RemoteSync\helpers\ZipHelper;
 
-use weareferal\remotesync\services\providers\AWSS3Provider;
-use weareferal\remotesync\services\providers\BackblazeB2Provider;
-use weareferal\remotesync\services\providers\DigitalOceanProvider;
-use weareferal\remotesync\services\providers\GoogleDriveProvider;
-use weareferal\remotesync\services\providers\DropboxProvider;
 
 interface Provider
 {
-    public function isConfigured(): bool;
-    public function isAuthenticated(): bool;
     public function list($filterExtensions): array;
     public function push($path);
-    public function pull($key, $localPath);
+    public function pull($key, $path);
     public function delete($key);
 }
 
-class RemoteSyncObject
+class RemoteSyncInstance
 {
     public $filename;
     public $datetime;
@@ -45,7 +39,7 @@ class RemoteSyncObject
     public function __construct($_filename)
     {
         // Extract values from filename
-        preg_match(RemoteSyncObject::$regex, $_filename, $matches);
+        preg_match(RemoteSyncInstance::$regex, $_filename, $matches);
         $env = $matches[1];
         $date = $matches[2];
         $datetime = date_create_from_format('ymd_Gis', $date);
@@ -375,10 +369,10 @@ class RemoteSyncService extends Component
     }
 
     /**
-     * Return a chronologically sorted array of objects
+     * Return a chronologically sorted array of Backup objects
      * 
      * @param string[] Array of filenames
-     * @return array[] Array of objects
+     * @return array[] Array of Backup objects
      * @since 1.0.0
      */
     private function parseFilenames($filenames): array
@@ -386,7 +380,7 @@ class RemoteSyncService extends Component
         $backups = [];
 
         foreach ($filenames as $filename) {
-            array_push($backups, new RemoteSyncObject($filename));
+            array_push($backups, new RemoteSyncInstance($filename));
         }
 
         uasort($backups, function ($b1, $b2) {
@@ -407,28 +401,11 @@ class RemoteSyncService extends Component
      */
     protected function getLocalDir()
     {
-        $dir = Craft::$app->path->getStoragePath() . "/remote-sync";
+        $dir = Craft::$app->path->getStoragePath() . "/sync";
         if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
         return $dir;
-    }
-
-    /**
-     * Filter filenames by extension
-     * 
-     * @param string $extension the file extension to filter by
-     * @return array list of filtered filenames
-     */
-    protected function filterByExtension($filenames, $extension)
-    {
-        $filtered_filenames = [];
-        foreach ($filenames as $filename) {
-            if (substr($filename, -strlen($extension)) === $extension) {
-                array_push($filtered_filenames, basename($filename));
-            }
-        }
-        return $filtered_filenames;
     }
 
     /**
@@ -445,15 +422,8 @@ class RemoteSyncService extends Component
     {
         switch ($provider) {
             case "s3":
-                return AWSS3Provider::class;
-            case "b2":
-                return BackblazeB2Provider::class;
-            case "google":
-                return GoogleDriveProvider::class;
-            case "dropbox":
-                return DropboxProvider::class;
-            case "do":
-                return DigitalOceanProvider::class;
+                return S3Provider::class;
+                break;
         }
     }
 }

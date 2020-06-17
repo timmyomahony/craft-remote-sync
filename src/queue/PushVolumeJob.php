@@ -1,10 +1,10 @@
 <?php
 
-namespace weareferal\remotesync\queue;
+namespace weareferal\RemoteSync\queue;
 
 use craft\queue\BaseJob;
 
-use weareferal\remotesync\RemoteSync;
+use weareferal\RemoteSync\RemoteSync;
 
 class PushVolumeJob extends BaseJob
 {
