@@ -12,7 +12,7 @@ class PullDatabaseJob extends BaseJob
 
     public function execute($queue)
     {
-        RemoteSync::getInstance()->remotesync->pullDatabase($this->filename);
+        RemoteSync::getInstance()->provider->pullDatabase($this->filename);
     }
 
     protected function defaultDescription()

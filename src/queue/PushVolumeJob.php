@@ -10,7 +10,7 @@ class PushVolumeJob extends BaseJob
 {
     public function execute($queue)
     {
-        RemoteSync::getInstance()->remotesync->pushVolumes();
+        RemoteSync::getInstance()->provider->pushVolumes();
     }
 
     protected function defaultDescription()

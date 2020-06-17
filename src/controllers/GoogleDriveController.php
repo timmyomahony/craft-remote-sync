@@ -49,7 +49,7 @@ class GoogleDriveController extends Controller
         $this->requireGoogleDriveProvider();
 
         $plugin = RemoteSync::getInstance();
-        $service = $plugin->remotesync;
+        $service = $plugin->provider;
         $client = $service->getClient();
         $isExpired = $client->isAccessTokenExpired();
 
@@ -96,7 +96,7 @@ class GoogleDriveController extends Controller
         $this->requireGoogleDriveProvider();
 
         $plugin = RemoteSync::getInstance();
-        $service = $plugin->remotesync;
+        $service = $plugin->provider;
 
         $code = Craft::$app->getRequest()->get('code');
         if (!$code) {

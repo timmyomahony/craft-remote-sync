@@ -74,29 +74,29 @@
       this.$tbody.find(".errors-row").show();
     },
 
-    updateTable: function (backups, error) {
+    updateTable: function (options, error) {
       if (error) {
         this.showTableErrors();
         return false;
       }
 
-      if (backups.length <= 0) {
+      if (options.length <= 0) {
         this.showTableNoResults();
         return false;
       }
 
       // Files are ordered newest to oldest ([0] = most recent) but we
       // prepend them instead of append them to make it easier to style
-      for (var i = backups.length - 1; i >= 0; i--) {
+      for (var i = options.length - 1; i >= 0; i--) {
         var $row = this.$tbody
           .find(".template-row")
           .clone()
           .removeClass("template-row default-row");
 
         var $td = $row.find("td:first");
-        $td.text(backups[i].label);
-        $td.attr("title", backups[i].value);
-        $td.attr("data-filename", backups[i].value);
+        $td.text(options[i].label);
+        $td.attr("title", options[i].value);
+        $td.attr("data-filename", options[i].value);
 
         if (i === 0) {
           $td.append($("<span>").text("latest"));
@@ -107,18 +107,18 @@
         this.addListener(
           $row.find(".pull-button"),
           "click",
-          this.pull.bind(this, backups[i].value)
+          this.pull.bind(this, options[i].value)
         );
         this.addListener(
           $row.find(".delete-button"),
           "click",
-          this.delete.bind(this, backups[i].value)
+          this.delete.bind(this, options[i].value)
         );
 
         this.$tbody.prepend($row);
       }
 
-      if (backups.length > 3) {
+      if (options.length > 3) {
         this.$showAllRow.show();
       }
 
@@ -176,9 +176,9 @@
         dataType: "json",
         success: function (response) {
           if (response["success"]) {
-            this.updateTable(response["backups"]);
+            this.updateTable(response["options"]);
           } else {
-            var message = "Error fetching backups";
+            var message = "Error fetching files";
             if (response["error"]) {
               message = response["error"];
             }
@@ -191,7 +191,7 @@
         }.bind(this),
         error: function (error) {
           this.updateTable([], true);
-          Craft.cp.displayError("Error fetching backups");
+          Craft.cp.displayError("Error fetching files");
         }.bind(this),
       });
     },
@@ -209,7 +209,7 @@
           if (response["success"]) {
             window.location.reload();
           } else {
-            var message = "Error fetching backups";
+            var message = "Error fetching files";
             if (response["error"]) {
               message = response["error"];
             }
