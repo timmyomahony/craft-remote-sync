@@ -8,6 +8,7 @@
         {{ false }}
     {%- endif -%}
 {%- endmacro %}
+
 {% from _self import configWarning %}
 
 {{ forms.lightswitchField({
@@ -29,7 +30,11 @@
     id: 'cloudProvider',
     name: 'cloudProvider',
     options: [
-        { label: 'Amazon S3', value: 's3' }
+        { label: 'Amazon S3', value: 's3' },
+        { label: 'Backblaze B2', value: 'b2' },
+        { label: 'Google Drive', value: 'google' },
+        { label: 'Dropbox', value: 'dropbox' },
+        { label: 'Digital Ocean Spaces', value: 'do' }
     ],
     value: settings.cloudProvider,
     required: true,
@@ -37,80 +42,343 @@
     warning: configWarning('cloudProvider', 'remote-sync')
 }) }}
 
-{{ forms.autosuggestField({
-    label: "S3 Access Key"|t('remote-sync'),
-    instructions: "The access key associated with your IAM user"|t('remote-sync'),
-    name: 's3AccessKey',
-    id: 's3AccessKey',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3AccessKey,
-    required: (settings.s3AccessKey == 's3'),
-    type: 'password',
-    errors: settings.getErrors('s3AccessKey'),
-    warning: configWarning('s3AccessKey', 'remote-sync')
-}) }}
+{# AWS #}
+<div class="provider provider-s3">
+    {{ forms.autosuggestField({
+        label: "S3 Access Key"|t('remote-sync'),
+        instructions: "The access key associated with your IAM user"|t('remote-sync'),
+        name: 's3AccessKey',
+        id: 's3AccessKey',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.s3AccessKey,
+        required: (settings.cloudProvider == 's3'),
+        type: 'password',
+        errors: settings.getErrors('s3AccessKey'),
+        warning: configWarning('s3AccessKey', 'remote-sync')
+    }) }}
 
-{{ forms.autosuggestField({
-    label: "S3 Secret Key",
-    instructions: "The secret key associated with your IAM user"|t('remote-sync'),
-    name: 's3SecretKey',
-    id: 's3SecretKey',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3SecretKey,
-    required: (settings.s3SecretKey == 's3'),
-    type: 'password',
-    errors: settings.getErrors('s3SecretKey'),
-    warning: configWarning('s3SecretKey', 'remote-sync')
-}) }}
+    {{ forms.autosuggestField({
+        label: "S3 Secret Key",
+        instructions: "The secret key associated with your IAM user"|t('remote-sync'),
+        name: 's3SecretKey',
+        id: 's3SecretKey',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.s3SecretKey,
+        required: (settings.cloudProvider == 's3'),
+        type: 'password',
+        errors: settings.getErrors('s3SecretKey'),
+        warning: configWarning('s3SecretKey', 'remote-sync')
+    }) }}
 
-{{ forms.autosuggestField({
-    label: "S3 Bucket Name"|t('remote-sync'),
-    instructions: "The name of the S3 bucket you want to send backups to"|t('remote-sync'),
-    name: 's3BucketName',
-    id: 's3BucketName',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3BucketName,
-    placeholder: "my-craft-backups",
-    required: (settings.s3BucketName == 's3'),
-    errors: settings.getErrors('s3BucketName'),
-    warning: configWarning('s3BucketName', 'remote-sync')
-}) }}
+    {{ forms.autosuggestField({
+        label: "S3 Bucket Name"|t('remote-sync'),
+        instructions: "The name of the S3 bucket you want to send files to"|t('remote-sync'),
+        name: 's3BucketName',
+        id: 's3BucketName',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.s3BucketName,
+        placeholder: "craft-sync",
+        required: (settings.cloudProvider == 's3'),
+        errors: settings.getErrors('s3BucketName'),
+        warning: configWarning('s3BucketName', 'remote-sync')
+    }) }}
 
-{{ forms.autosuggestField({
-    label: "S3 Region Name"|t('remote-sync'),
-    instructions: "The AWS region your S3 bucket is in"|t('remote-sync'),
-    name: 's3RegionName',
-    id: 's3RegionName',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3RegionName,
-    placeholder: "us-west-2",
-    required: (settings.s3RegionName == 's3'),
-    errors: settings.getErrors('s3RegionName'),
-    warning: configWarning('s3RegionName', 'remote-sync')
-}) }}
+    {{ forms.autosuggestField({
+        label: "S3 Region Name"|t('remote-sync'),
+        instructions: "The AWS region your S3 bucket is in"|t('remote-sync'),
+        name: 's3RegionName',
+        id: 's3RegionName',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.s3RegionName,
+        placeholder: "us-west-2",
+        required: (settings.cloudProvider == 's3'),
+        errors: settings.getErrors('s3RegionName'),
+        warning: configWarning('s3RegionName', 'remote-sync')
+    }) }}
 
-{{ forms.autosuggestField({
-    label: "S3 Bucket Prefix"|t('remote-sync'),
-    instructions: "A path within your S3 bucket to prefix your backups with. Do not include a leading or trailing slash"|t('remote-sync'),
-    name: 's3BucketPrefix',
-    id: 's3BucketPrefix',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3BucketPrefix,
-    placeholder: "craft-backups/my-site",
-    errors: settings.getErrors('s3BucketPrefix'),
-    warning: configWarning('s3BucketPrefix', 'remote-sync')
-}) }}
+    {{ forms.autosuggestField({
+        label: "S3 Bucket Path"|t('remote-sync'),
+        instructions: "A path within your S3 bucket to prefix your files with. Do not include a leading or trailing slash"|t('remote-sync'),
+        name: 's3BucketPath',
+        id: 's3BucketPath',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.s3BucketPath,
+        placeholder: "craft-sync/my-site",
+        errors: settings.getErrors('s3BucketPath'),
+        warning: configWarning('s3BucketPath', 'remote-sync')
+    }) }}
+</div>
+
+{# Backblaze B2 #}
+<div class="provider provider-b2">
+    {{ forms.autosuggestField({
+        label: "B2 Master Key ID"|t('remote-sync'),
+        instructions: "Your Backblaze master 'keyID'"|t('remote-sync'),
+        name: 'b2MasterKeyID',
+        id: 'b2MasterKeyID',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.b2MasterKeyID,
+        required: (settings.cloudProvider == 'b2'),
+        type: 'password',
+        errors: settings.getErrors('b2MasterKeyID'),
+        warning: configWarning('b2MasterKeyID', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "B2 Master Application Key",
+        instructions: "Your Backblaze master 'applicationKey'"|t('remote-sync'),
+        name: 'b2MasterAppKey',
+        id: 'b2MasterAppKey',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.b2MasterAppKey,
+        required: (settings.cloudProvider == 'b2'),
+        type: 'password',
+        errors: settings.getErrors('b2MasterAppKey'),
+        warning: configWarning('b2MasterAppKey', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "S2 Bucket Name"|t('remote-sync'),
+        instructions: "The name of the B2 bucket you want to send files to"|t('remote-sync'),
+        name: 'b2BucketName',
+        id: 'b2BucketName',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.b2BucketName,
+        placeholder: "craft-sync",
+        required: (settings.cloudProvider == 'b2'),
+        errors: settings.getErrors('b2BucketName'),
+        warning: configWarning('b2BucketName', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "B2 Bucket Path"|t('remote-sync'),
+        instructions: "An optional path within your B2 bucket to prefix your files with. Do not include a leading or trailing slash. [Learn more](https://github.com/weareferal/craft-remote-sync/wiki/Backblaze-B2#optional-folder-path)"|t('remote-sync'),
+        name: 'b2BucketPath',
+        id: 'b2BucketPath',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.b2BucketPath,
+        placeholder: "craft-sync/my-site",
+        errors: settings.getErrors('b2BucketPath'),
+        warning: configWarning('b2BucketPath', 'remote-sync')
+    }) }}
+</div>
+
+{# Google Drive #}
+<div class="provider provider-google">
+    {{ forms.autosuggestField({
+        label: "Google Drive Project Name",
+        instructions: "The name of your project in the Google Developer Console"|t('remote-sync'),
+        name: 'googleProjectName',
+        id: 'googleProjectName',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.googleProjectName,
+        required: (settings.cloudProvider == 'google'),
+        errors: settings.getErrors('googleProjectName'),
+        warning: configWarning('googleProjectName', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Google Drive Client ID"|t('remote-sync'),
+        instructions: "The generated oauth client ID"|t('remote-sync'),
+        name: 'googleClientId',
+        id: 'googleClientId',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        type: 'password',
+        value: settings.googleClientId,
+        required: (settings.cloudProvider == 'google'),
+        errors: settings.getErrors('googleClientId'),
+        warning: configWarning('googleClientId', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Google Drive Client Secret",
+        instructions: "The generated oauth secret key"|t('remote-sync'),
+        name: 'googleClientSecret',
+        id: 'googleClientSecret',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        type: 'password',
+        value: settings.googleClientSecret,
+        required: (settings.cloudProvider == 'google'),
+        errors: settings.getErrors('googleClientSecret'),
+        warning: configWarning('googleClientSecret', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Google Drive Auth Redirect",
+        instructions: "The URL to redirect to after succesful oauth authentication"|t('remote-sync'),
+        name: 'googleAuthRedirect',
+        id: 'googleAuthRedirect',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.googleAuthRedirect,
+        required: (settings.cloudProvider == 'google'),
+        errors: settings.getErrors('googleAuthRedirect'),
+        warning: configWarning('googleAuthRedirect', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Google Drive Folder ID",
+        instructions: "The ID for the folder you want to upload files to (optional but recommended)"|t('remote-sync'),
+        name: 'googleDriveFolderId',
+        id: 'googleDriveFolderId',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.googleDriveFolderId,
+        errors: settings.getErrors('googleDriveFolderId'),
+        warning: configWarning('googleDriveFolderId', 'remote-sync')
+    }) }}    
+
+    {% if isConfigured and not isAuthenticated %}
+        <div>
+            <a href="/admin/remote-sync/google-drive/auth" class="btn">{{"Authenticate with Google Drive"|t}}</a>
+        </div>
+    {% endif %}
+</div>
+
+{# Dropbox #}
+<div class="provider provider-dropbox">
+    {{ forms.autosuggestField({
+        label: "Dropbox App Key",
+        instructions: "You Dropbox app's app key"|t('remote-sync'),
+        name: 'dropboxAppKey',
+        id: 'dropboxAppKey',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.dropboxAppKey,
+        required: (settings.cloudProvider == 'dropbox'),
+        errors: settings.getErrors('dropboxAppKey'),
+        warning: configWarning('dropboxAppKey', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Dropbox Secret Key",
+        instructions: "You Dropbox app's secret key"|t('remote-sync'),
+        name: 'dropboxSecretKey',
+        id: 'dropboxSecretKey',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.dropboxSecretKey,
+        required: (settings.cloudProvider == 'dropbox'),
+        errors: settings.getErrors('dropboxSecretKey'),
+        warning: configWarning('dropboxSecretKey', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Dropbox Access Token",
+        instructions: "You Dropbox app's access token"|t('remote-sync'),
+        name: 'dropboxAccessToken',
+        id: 'dropboxAccessToken',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.dropboxAccessToken,
+        required: (settings.cloudProvider == 'dropbox'),
+        errors: settings.getErrors('dropboxAccessToken'),
+        warning: configWarning('dropboxAccessToken', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Dropbox Folder",
+        instructions: "An optional folder path within Dropbox to store files. Must start with a slash but not end with one"|t('remote-sync'),
+        name: 'dropboxFolder',
+        placeholder: '/craft-syncs',
+        id: 'dropboxFolder',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.dropboxFolder,
+        errors: settings.getErrors('dropboxFolder'),
+        warning: configWarning('dropboxFolder', 'remote-sync')
+    }) }}
+</div>
+
+{# Digital Ocean Spaces #}
+<div class="provider provider-do">
+    {{ forms.autosuggestField({
+        label: "Digital Ocean Spaces Access Key"|t('remote-sync'),
+        instructions: "The Digital Ocean API access key"|t('remote-sync'),
+        name: 'doAccessKey',
+        id: 'doAccessKey',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.doAccessKey,
+        required: (settings.cloudProvider == 'do'),
+        type: 'password',
+        errors: settings.getErrors('doAccessKey'),
+        warning: configWarning('doAccessKey', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Digital Ocean Spaces Secret Key",
+        instructions: "The Digital Ocean API secret key"|t('remote-sync'),
+        name: 'doSecretKey',
+        id: 'doSecretKey',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.doSecretKey,
+        required: (settings.cloudProvider == 'do'),
+        type: 'password',
+        errors: settings.getErrors('doSecretKey'),
+        warning: configWarning('doSecretKey', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Digital Ocean Spaces Name"|t('remote-sync'),
+        instructions: "The name of the DO Space you want to send files to"|t('remote-sync'),
+        name: 'doSpacesName',
+        id: 'doSpacesName',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.doSpacesName,
+        placeholder: "craft-sync",
+        required: (settings.cloudProvider == 'do'),
+        errors: settings.getErrors('doSpacesName'),
+        warning: configWarning('doSpacesName', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Digital Ocean Spaces Region Name"|t('remote-sync'),
+        instructions: "The region your DO Space is in"|t('remote-sync'),
+        name: 'doRegionName',
+        id: 'doRegionName',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.doRegionName,
+        placeholder: "fra1",
+        required: (settings.cloudProvider == 'do'),
+        errors: settings.getErrors('doRegionName'),
+        warning: configWarning('doRegionName', 'remote-sync')
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Digital Ocean Spaces Path"|t('remote-sync'),
+        instructions: "A path within your DO Space to prefix your files with. Do not include a leading or trailing slash"|t('remote-sync'),
+        name: 'doSpacesPath',
+        id: 'doSpacesPath',
+        suggestEnvVars: true,
+        suggestAliases: true,
+        value: settings.doSpacesPath,
+        placeholder: "craft-sync/my-site",
+        errors: settings.getErrors('doSpacesPath'),
+        warning: configWarning('doSpacesPath', 'remote-sync')
+    }) }}
+</div>
 
 <hr>
 
 {{ forms.lightswitchField({
     label: "Use Queue"|t('remote-sync'),
-    instructions: "Use the built-in Craft queue for performing backup operations"|t('remote-sync'),
+    instructions: "Use the built-in Craft queue for performing sync operations"|t('remote-sync'),
     name: 'useQueue',
     id: 'useQueue',
     on: settings.useQueue,

@@ -1,13 +1,13 @@
 <?php
 
-namespace weareferal\RemoteSync\console\controllers;
+namespace weareferal\remotesync\console\controllers;
 
 use Craft;
 use yii\console\Controller;
 use yii\helpers\Console;
 use yii\console\ExitCode;
 
-use weareferal\RemoteSync\RemoteSync;
+use weareferal\remotesync\RemoteSync;
 
 /**
  * Manage remote databases
@@ -23,7 +23,7 @@ class DatabaseController extends Controller
 
     public function requirePluginConfigured()
     {
-        if (!RemoteSync::getInstance()->getSettings()->isConfigured()) {
+        if (!RemoteSync::getInstance()->remotesync->isConfigured()) {
             throw new \Exception('Remote Sync Plugin not correctly configured');
         }
     }

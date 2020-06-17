@@ -1,10 +1,10 @@
 <?php
 
-namespace weareferal\RemoteSync\queue;
+namespace weareferal\remotesync\queue;
 
 use craft\queue\BaseJob;
 
-use weareferal\RemoteSync\RemoteSync;
+use weareferal\remotesync\RemoteSync;
 
 class PruneVolumesJob extends BaseJob
 {
