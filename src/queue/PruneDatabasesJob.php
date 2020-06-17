@@ -10,7 +10,7 @@ class PruneDatabasesJob extends BaseJob
 {
     public function execute($queue)
     {
-        RemoteSync::getInstance()->provider->pruneDatabases();
+        RemoteSync::getInstance()->pruneservice->pruneDatabases();
     }
 
     protected function defaultDescription()

@@ -23,6 +23,7 @@ use yii\base\Event;
 use weareferal\remotesync\utilities\RemoteSyncUtility;
 use weareferal\remotesync\models\Settings;
 use weareferal\remotesync\assets\remotesyncsettings\RemoteSyncSettingAsset;
+use weareferal\remotesync\services\PruneService;
 
 use weareferal\remotecore\services\ProviderService;
 
@@ -43,7 +44,8 @@ class RemoteSync extends Plugin
 
         // via craft-remote-core
         $this->setComponents([
-            'provider' => ProviderService::create($this->getSettings())
+            'pruneservice' => PruneService::class,
+            'provider' => ProviderService::create($this->getSettings(), 'remote-sync')
         ]);
 
         // Register console commands
