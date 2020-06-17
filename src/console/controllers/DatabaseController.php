@@ -14,14 +14,14 @@ use weareferal\remotesync\RemoteSync;
  */
 class DatabaseController extends Controller
 {
-    public function requirePluginEnabled()
+    private function requirePluginEnabled()
     {
         if (!RemoteSync::getInstance()->getSettings()->enabled) {
             throw new \Exception('Remote Sync Plugin not enabled');
         }
     }
 
-    public function requirePluginConfigured()
+    private function requirePluginConfigured()
     {
         if (!RemoteSync::getInstance()->provider->isConfigured()) {
             throw new \Exception('Remote Sync Plugin not correctly configured');
@@ -36,14 +36,13 @@ class DatabaseController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
-
-            $results = RemoteSync::getInstance()->provider->listDatabases();
-            if (count($results) <= 0) {
+            $remoteFiles = RemoteSync::getInstance()->provider->listDatabases();
+            if (count($remoteFiles) <= 0) {
                 $this->stdout("No remote databases" . PHP_EOL, Console::FG_YELLOW);
             } else {
                 $this->stdout("Remote databases:" . PHP_EOL, Console::FG_GREEN);
-                foreach ($results as $result) {
-                    $this->stdout(" " . $result['value'] . PHP_EOL);
+                foreach ($remoteFiles as $remoteFile) {
+                    $this->stdout(" " . $remoteFile->filename . PHP_EOL);
                 }
             }
         } catch (\Exception $e) {
@@ -62,7 +61,6 @@ class DatabaseController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
-
             $filename = RemoteSync::getInstance()->provider->pushDatabase();
             $this->stdout("Pushed local database to remote destination:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout(" " . $filename . PHP_EOL);
@@ -82,12 +80,12 @@ class DatabaseController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
-
-            if (!RemoteSync::getInstance()->getSettings()->prune) {
+            $plugin = RemoteSync::getInstance();
+            if (!$plugin->getSettings()->prune) {
                 $this->stderr("Pruning disabled. Please enable via the Remote Sync control panel settings" . PHP_EOL, Console::FG_YELLOW);
                 return ExitCode::CONFIG;
             } else {
-                $filenames = RemoteSync::getInstance()->provider->pruneDatabases();
+                $filenames = $plugin->pruneservice->pruneDatabases();
                 if (count($filenames) <= 0) {
                     $this->stdout("No database files deleted" . PHP_EOL, Console::FG_YELLOW);
                 } else {
@@ -114,7 +112,6 @@ class DatabaseController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
-
             RemoteSync::getInstance()->provider->pullDatabase($filename);
             $this->stdout("Pulled and restored remote database:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout(" " . $filename . PHP_EOL);
@@ -134,7 +131,6 @@ class DatabaseController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
-
             RemoteSync::getInstance()->provider->deleteDatabase($filename);
             $this->stdout("Deleted remote database:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout(" " . $filename . PHP_EOL);

@@ -11,6 +11,7 @@ use weareferal\remotesync\RemoteSync;
 /**
  * Prune service
  * 
+ * @since 1.3.0
  */
 class PruneService extends Component
 {
@@ -25,8 +26,8 @@ class PruneService extends Component
      */
     public function pruneDatabases($dryRun = false)
     {
-        $filenames = RemoteSync::getInstance()->provider->list(".sql");
-        return $this->prune($filenames, $dryRun);
+        $remoteFiles = RemoteSync::getInstance()->provider->listDatabases();
+        return $this->prune($remoteFiles, $dryRun);
     }
 
     /**
@@ -40,8 +41,8 @@ class PruneService extends Component
      */
     public function pruneVolumes($dryRun = false)
     {
-        $filenames = RemoteSync::getInstance()->provider->list(".zip");
-        return $this->prune($filenames, $dryRun);
+        $remoteFiles = RemoteSync::getInstance()->provider->listVolumes();
+        return $this->prune($remoteFiles, $dryRun);
     }
 
     /**
@@ -57,29 +58,29 @@ class PruneService extends Component
      * @return array the deleted files (or empty array)
      * @since 1.2.0
      */
-    private function prune($filenames, $dryRun = false)
+    private function prune($remoteFiles, $dryRun = false)
     {
         $plugin = RemoteSync::getInstance();
         $settings = $plugin->getSettings();
-
-        $files = $plugin->provider->parseFilenames($filenames);
         $deleted_filenames = [];
 
         if (!$settings->prune) {
             Craft::warning("Pruning disabled" . PHP_EOL, 'remote-sync');
             return $deleted_filenames;
-        } else if (count($files) < $settings->pruneLimit) {
+        } else if (count($remoteFiles) < $settings->pruneLimit) {
             Craft::warning("Skipping file pruning: files < prune limit" . PHP_EOL, 'remote-sync');
             return $deleted_filenames;
         }
-        $files = array_slice($files, $settings->pruneLimit, count($files));
-        foreach ($files as $file) {
+
+        $remoteFiles = array_slice($remoteFiles, $settings->pruneLimit, count($remoteFiles));
+        foreach ($remoteFiles as $file) {
             $filename = $file->filename;
             if (!$dryRun) {
-                $this->delete($file->filename);
+                $plugin->provider->delete($file->filename);
                 array_push($deleted_filenames, $filename);
             }
         }
+
         return $deleted_filenames;
     }
 }
