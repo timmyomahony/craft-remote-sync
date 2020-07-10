@@ -1,4 +1,6 @@
 {
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "name": "weareferal/remote-sync",
     "description": "Sync your database and assets across Craft environments",
     "type": "craft-plugin",
@@ -22,8 +24,14 @@
     ],
     "require": {
         "craftcms/cms": "^3.0.0-RC1",
-        "weareferal/remote-core": "^1.0"
+        "weareferal/remote-core": "dev-develop"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../craft-remote-core"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "weareferal\\remotesync\\": "src/"

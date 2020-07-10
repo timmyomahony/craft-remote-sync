@@ -13,10 +13,8 @@ use Craft;
 use craft\base\Plugin;
 use craft\services\Utilities;
 use craft\events\RegisterComponentTypesEvent;
-use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\UserPermissions;
-use craft\web\UrlManager;
 
 use yii\base\Event;
 
@@ -25,11 +23,14 @@ use weareferal\remotesync\models\Settings;
 use weareferal\remotesync\assets\remotesyncsettings\RemoteSyncSettingAsset;
 use weareferal\remotesync\services\PruneService;
 
-use weareferal\remotecore\services\ProviderService;
+use weareferal\remotecore\RemoteCoreTrait;
 
 
 class RemoteSync extends Plugin
 {
+
+    use RemoteCoreTrait;
+
     public $hasCpSettings = true;
 
     public static $plugin;
@@ -39,21 +40,18 @@ class RemoteSync extends Plugin
     public function init()
     {
         parent::init();
-
         self::$plugin = $this;
 
-        // via craft-remote-core
-        $this->setComponents([
-            'pruneservice' => PruneService::class,
-            'provider' => ProviderService::create($this->getSettings(), 'remote-sync')
-        ]);
+        $this->registerServices();
+        $this->registerConsoleControllers();
+        $this->registerPermissions();
+        $this->registerUtilties();
 
-        // Register console commands
-        if (Craft::$app instanceof ConsoleApplication) {
-            $this->controllerNamespace = 'weareferal\remotesync\console\controllers';
-        }
+        $this->registerCore();
+    }
 
-        // Register permissions
+    public function registerPermissions()
+    {
         Event::on(
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
@@ -65,26 +63,36 @@ class RemoteSync extends Plugin
                 ];
             }
         );
+    }
 
-        // Register with Utilities service
+    public function registerURLs()
+    {
+        parent::registerURLs();
+    }
+
+    public function registerConsoleControllers()
+    {
+        if (Craft::$app instanceof ConsoleApplication) {
+            $this->controllerNamespace = 'weareferal\remotesync\console\controllers';
+        }
+    }
+
+    public function registerServices()
+    {
+        parent::registerServices();
+        $this->setComponents([
+            'pruneservice' => PruneService::class
+        ]);
+    }
+
+    public function registerUtilties()
+    {
         if ($this->getSettings()->enabled) {
             Event::on(
                 Utilities::class,
                 Utilities::EVENT_REGISTER_UTILITY_TYPES,
                 function (RegisterComponentTypesEvent $event) {
                     $event->types[] = RemoteSyncUtility::class;
-                }
-            );
-        }
-
-        // Extra urls
-        if ($this->getSettings()->cloudProvider == "google") {
-            Event::on(
-                UrlManager::class,
-                UrlManager::EVENT_REGISTER_CP_URL_RULES,
-                function (RegisterUrlRulesEvent $event) {
-                    $event->rules['remote-sync/google-drive/auth'] = 'remote-sync/google-drive/auth';
-                    $event->rules['remote-sync/google-drive/auth-redirect'] = 'remote-sync/google-drive/auth-redirect';
                 }
             );
         }
