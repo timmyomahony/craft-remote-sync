@@ -23,13 +23,11 @@ use weareferal\remotesync\models\Settings;
 use weareferal\remotesync\assets\remotesyncsettings\RemoteSyncSettingAsset;
 use weareferal\remotesync\services\PruneService;
 
-use weareferal\remotecore\RemoteCoreTrait;
+use weareferal\remotecore\RemoteCoreHelper;
 
 
 class RemoteSync extends Plugin
 {
-
-    use RemoteCoreTrait;
 
     public $hasCpSettings = true;
 
@@ -42,14 +40,18 @@ class RemoteSync extends Plugin
         parent::init();
         self::$plugin = $this;
 
+        RemoteCoreHelper::registerModule();
+
         $this->registerServices();
         $this->registerConsoleControllers();
         $this->registerPermissions();
         $this->registerUtilties();
-
-        $this->registerCore();
     }
 
+    /**
+     * Register Permissions
+     * 
+     */
     public function registerPermissions()
     {
         Event::on(
@@ -65,11 +67,28 @@ class RemoteSync extends Plugin
         );
     }
 
+    /**
+     * Register URLs
+     * 
+     */
     public function registerURLs()
     {
-        parent::registerURLs();
+        if ($this->getSettings()->cloudProvider == "google") {
+            Event::on(
+                UrlManager::class,
+                UrlManager::EVENT_REGISTER_CP_URL_RULES,
+                function (RegisterUrlRulesEvent $event) {
+                    $event->rules['remote-sync/google-drive/auth'] = 'remote-sync/google-drive/auth';
+                    $event->rules['remote-sync/google-drive/auth-redirect'] = 'remote-sync/google-drive/auth-redirect';
+                }
+            );
+        }
     }
 
+    /**
+     * Register Console Controllers
+     * 
+     */
     public function registerConsoleControllers()
     {
         if (Craft::$app instanceof ConsoleApplication) {
@@ -77,14 +96,22 @@ class RemoteSync extends Plugin
         }
     }
 
+    /**
+     * Register Services
+     * 
+     */
     public function registerServices()
     {
-        parent::registerServices();
         $this->setComponents([
-            'pruneservice' => PruneService::class
+            'provider' => Craft::$app->getModule('remote-core')->providerFactory->create($this),
+            'prune' => PruneService::class
         ]);
     }
 
+    /**
+     * Register Utilities
+     * 
+     */
     public function registerUtilties()
     {
         if ($this->getSettings()->enabled) {

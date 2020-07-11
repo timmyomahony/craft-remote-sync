@@ -85,7 +85,7 @@ class DatabaseController extends Controller
                 $this->stderr("Pruning disabled. Please enable via the Remote Sync control panel settings" . PHP_EOL, Console::FG_YELLOW);
                 return ExitCode::CONFIG;
             } else {
-                $filenames = $plugin->pruneservice->pruneDatabases();
+                $filenames = $plugin->prune->pruneDatabases();
                 if (count($filenames) <= 0) {
                     $this->stdout("No database files deleted" . PHP_EOL, Console::FG_YELLOW);
                 } else {
