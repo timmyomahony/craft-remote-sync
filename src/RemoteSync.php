@@ -20,11 +20,10 @@ use yii\base\Event;
 
 use weareferal\remotesync\utilities\RemoteSyncUtility;
 use weareferal\remotesync\models\Settings;
-use weareferal\remotesync\assets\remotesyncsettings\RemoteSyncSettingAsset;
 use weareferal\remotesync\services\PruneService;
 
 use weareferal\remotecore\RemoteCoreHelper;
-
+use weareferal\remotecore\assets\remotecoresettings\RemoteCoreSettingsAsset;
 
 class RemoteSync extends Plugin
 {
@@ -133,8 +132,8 @@ class RemoteSync extends Plugin
     protected function settingsHtml(): string
     {
         $view = Craft::$app->getView();
-        $view->registerAssetBundle(RemoteSyncSettingAsset::class);
-        $view->registerJs("new Craft.RemoteSyncSettings('main-form');");
+        $view->registerAssetBundle(RemoteCoreSettingsAsset::class);
+        $view->registerJs("new Craft.RemoteCoreSettings('main-form');");
 
         $isAuthenticated = $this->provider->isAuthenticated();
         $isConfigured = $this->provider->isConfigured();
