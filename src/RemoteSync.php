@@ -11,9 +11,11 @@ namespace weareferal\remotesync;
 
 use Craft;
 use craft\base\Plugin;
+use craft\web\UrlManager;
 use craft\services\Utilities;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\services\UserPermissions;
 
 use yii\base\Event;
@@ -24,6 +26,7 @@ use weareferal\remotesync\services\PruneService;
 
 use weareferal\remotecore\RemoteCoreHelper;
 use weareferal\remotecore\assets\remotecoresettings\RemoteCoreSettingsAsset;
+
 
 class RemoteSync extends Plugin
 {
