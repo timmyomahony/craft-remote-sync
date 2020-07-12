@@ -36,11 +36,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Fixed issue (#15) with restoring via queue where a new database backup would be pushed automatically (and incorrectly)
 - Fixed issue (#16) where not being logged out automatically via Ajax when restoring via the queue
 
-## 1.3.0 - 2020-06-17
+## 1.3.0 - 2020-07-12
 
 ### Changed
 
-- Moved all provider-related code into a separate `craft-remote-core` package dependency to be shared between `craft-remote-sync` and `craft-remote-backup`
+- Moved all shared code into a separate `craft-remote-core` package dependency to be shared between `craft-remote-sync` and `craft-remote-backup`
 
 ### Added
 
