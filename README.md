@@ -2,7 +2,7 @@
 
 <img src="src/icon.svg" width="125px">
 
-Sync your database and assets across Craft environments using a remote destination like AWS S3.
+Sync your database and assets across Craft environments using a remote destinations (AWS, Digital Ocean, Google Drive, Backblaze, Dropbox)
 
 ## Overview
 
@@ -12,7 +12,7 @@ Craft Remote Sync makes it easy to sync your database and volume assets across a
 
 This makes it much easier to move your site from local development to staging and onto production and avoids the need to regularly SSH into servers to perform database dumps and restores.
 
-To achieve this, the plugin uses a remote "single source of truth" (currently a S3 bucket) to push and pull database and asset/volumes files from.
+To achieve this, the plugin uses a remote "single source of truth" to push and pull database and asset/volumes files from.
 
 ![Craft Remote Sync Overview](./resources/img/overview.png)
 
