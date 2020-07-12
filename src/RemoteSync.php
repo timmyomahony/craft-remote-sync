@@ -42,6 +42,7 @@ class RemoteSync extends Plugin
         RemoteCoreHelper::registerModule();
 
         $this->registerServices();
+        $this->registerURLs();
         $this->registerConsoleControllers();
         $this->registerPermissions();
         $this->registerUtilties();
@@ -72,16 +73,14 @@ class RemoteSync extends Plugin
      */
     public function registerURLs()
     {
-        if ($this->getSettings()->cloudProvider == "google") {
-            Event::on(
-                UrlManager::class,
-                UrlManager::EVENT_REGISTER_CP_URL_RULES,
-                function (RegisterUrlRulesEvent $event) {
-                    $event->rules['remote-sync/google-drive/auth'] = 'remote-sync/google-drive/auth';
-                    $event->rules['remote-sync/google-drive/auth-redirect'] = 'remote-sync/google-drive/auth-redirect';
-                }
-            );
-        }
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules['remote-sync/google-drive/auth'] = 'remote-sync/google-drive/auth';
+                $event->rules['remote-sync/google-drive/auth-redirect'] = 'remote-sync/google-drive/auth-redirect';
+            }
+        );
     }
 
     /**
