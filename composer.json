@@ -1,4 +1,6 @@
 {
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "name": "weareferal/remote-sync",
     "description": "Sync your database and assets across Craft environments",
     "type": "craft-plugin",
@@ -22,7 +24,7 @@
     ],
     "require": {
         "craftcms/cms": "^3.0.0-RC1",
-        "weareferal/remote-core": "^1.0"
+        "weareferal/remote-core": "^1.1.0"
     },
     "autoload": {
         "psr-4": {
@@ -39,7 +41,6 @@
     },
     "suggest": {
         "aws/aws-sdk-php": "Required for AWS S3 or Digital Ocean Spaces usage",
-        "gliterd/backblaze-b2": "Required for Backblaze usage",
         "kunalvarma05/dropbox-php-sdk": "Required for Dropbox usage",
         "google/apiclient": "Required for Google Drive usage"
     }

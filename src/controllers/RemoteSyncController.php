@@ -100,7 +100,7 @@ class RemoteSyncController extends Controller
                 if ($settings->useQueue) {
                     $queue->push(new PruneDatabasesJob());
                 } else {
-                    $plugin->pruneservice->pruneDatabases();
+                    $plugin->prune->pruneDatabases();
                 }
             }
         } catch (\Exception $e) {
@@ -138,7 +138,7 @@ class RemoteSyncController extends Controller
                 if ($settings->useQueue) {
                     $queue->push(new PruneVolumesJob());
                 } else {
-                    $plugin->pruneservice->pruneVolumes();
+                    $plugin->prune->pruneVolumes();
                 }
             }
         } catch (\Exception $e) {
