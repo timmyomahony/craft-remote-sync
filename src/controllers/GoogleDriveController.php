@@ -1,6 +1,6 @@
 <?php
 
-namespace weareferal\remotesync;
+namespace weareferal\remotesync\controllers;
 
 use weareferal\remotecore\controllers\BaseGoogleDriveController;
 use weareferal\remotesync\RemoteSync;

@@ -7,7 +7,7 @@
  * @copyright Copyright (c) 2020 Timmy O'Mahony
  */
 
-namespace weareferal\RemoteSync;
+namespace weareferal\remotesync;
 
 use Craft;
 use craft\base\Plugin;
@@ -62,7 +62,7 @@ class RemoteSync extends Plugin
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function (RegisterUserPermissionsEvent $event) {
                 $event->permissions['Remote Sync'] = [
-                    'remote-sync' => [
+                    'remotesync' => [
                         'label' => 'Push and pull/restore database and volume assets',
                     ],
                 ];

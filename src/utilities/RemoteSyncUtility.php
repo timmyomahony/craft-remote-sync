@@ -1,12 +1,12 @@
 <?php
 
-namespace weareferal\RemoteSync\utilities;
+namespace weareferal\remotesync\utilities;
 
 use Craft;
 use craft\base\Utility;
 
-use weareferal\RemoteSync\assets\RemoteSyncutility\RemoteSyncUtilityAsset;
-use weareferal\RemoteSync\RemoteSync;
+use weareferal\remotesync\assets\remotesyncutility\RemoteSyncUtilityAsset;
+use weareferal\remotesync\RemoteSync;
 
 class RemoteSyncUtility extends Utility
 {
@@ -32,15 +32,19 @@ class RemoteSyncUtility extends Utility
         $view->registerJs("new Craft.RemoteSyncUtility('rb-utilities-database')");
         $view->registerJs("new Craft.RemoteSyncUtility('rb-utilities-volumes')");
 
-        $settings = RemoteSync::getInstance()->getSettings();
-        $service = RemoteSync::getInstance()->provider;
+        $plugin = RemoteSync::getInstance();
+        $settings = $plugin->getSettings();
+        $provider = $plugin->provider;
         $haveVolumes = count(Craft::$app->getVolumes()->getAllVolumes()) > 0;
         $queueActive = Craft::$app->queue->getHasWaitingJobs();
 
         return $view->renderTemplate('remote-sync/utilities/remote-sync', [
-            "settings" => $settings,
-            "volumesConfigured" => $volumesConfigured,
-            'queueActive' => $queueActive
+            "isConfigured" => $provider->isConfigured(),
+            "isAuthenticated" => $provider->isAuthenticated(),
+            "hideDatabases" => $settings->hideDatabases,
+            "hideVolumes" => $settings->hideVolumes,
+            "haveVolumes" => !$settings->hideVolumes && $haveVolumes,
+            "queueActive" => $queueActive
         ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace weareferal\RemoteSync\models;
+namespace weareferal\remotesync\models;
 
 use weareferal\remotecore\models\Settings as BaseSettings;
 
