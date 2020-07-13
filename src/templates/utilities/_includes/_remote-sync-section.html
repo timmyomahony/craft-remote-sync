@@ -14,10 +14,10 @@
             <tr class="first default-row template-row">
                 <td class="light"></td>
                 <td class="thin">
-                    <button class="btn small pull-button" title="{{ 'Pull and restore this ' ~ label|t }}">{{ 'Pull & Restore'|t }}</button>
+                    <button class="btn small pull-button" title="{{ 'Pull and restore ' ~ label|lower|t }}">{{ 'Pull & Restore'|t }}</button>
                 </td>
                 <td class="thin">
-                    <button class="btn small delete-button" title="{{ 'Delete this file this ' ~ label|t }}">{{ 'Delete'|t }}</button>
+                    <button class="btn small delete-button" title="{{ 'Delete ' ~ label|lower|t }}">{{ 'Delete'|t }}</button>
                 </td>
             </tr>
             <tr class="first default-row no-results-row">

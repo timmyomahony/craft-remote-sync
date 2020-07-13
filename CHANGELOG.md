@@ -48,3 +48,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Google Drive provider & documentation
 - Backblaze provider & documentation
 - Digital Ocean Spaces provider & documentation
+
+### 1.3.1 - 2020-07-13
+
+### Changed
+
+- Fixed strange merge issues from release :(
