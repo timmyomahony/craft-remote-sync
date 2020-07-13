@@ -11,21 +11,26 @@ namespace weareferal\RemoteSync;
 
 use Craft;
 use craft\base\Plugin;
+use craft\web\UrlManager;
 use craft\services\Utilities;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\services\UserPermissions;
 
 use yii\base\Event;
 
-use weareferal\RemoteSync\utilities\RemoteSyncUtility;
-use weareferal\RemoteSync\models\Settings;
-use weareferal\RemoteSync\services\RemoteSyncService;
-use weareferal\RemoteSync\assets\RemoteSyncsettings\RemoteSyncSettingAsset;
+use weareferal\remotesync\utilities\RemoteSyncUtility;
+use weareferal\remotesync\models\Settings;
+use weareferal\remotesync\services\PruneService;
+
+use weareferal\remotecore\RemoteCoreHelper;
+use weareferal\remotecore\assets\remotecoresettings\RemoteCoreSettingsAsset;
 
 
 class RemoteSync extends Plugin
 {
+
     public $hasCpSettings = true;
 
     public static $plugin;
@@ -35,19 +40,23 @@ class RemoteSync extends Plugin
     public function init()
     {
         parent::init();
-
         self::$plugin = $this;
 
-        $this->setComponents([
-            'remotesync' => RemoteSyncService::create($this->getSettings()->cloudProvider)
-        ]);
+        RemoteCoreHelper::registerModule();
 
-        // Register console commands
-        if (Craft::$app instanceof ConsoleApplication) {
-            $this->controllerNamespace = 'weareferal\RemoteSync\console\controllers';
-        }
+        $this->registerServices();
+        $this->registerURLs();
+        $this->registerConsoleControllers();
+        $this->registerPermissions();
+        $this->registerUtilties();
+    }
 
-        // Register permissions
+    /**
+     * Register Permissions
+     * 
+     */
+    public function registerPermissions()
+    {
         Event::on(
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
@@ -59,8 +68,53 @@ class RemoteSync extends Plugin
                 ];
             }
         );
+    }
 
-        // Register with Utilities service
+    /**
+     * Register URLs
+     * 
+     */
+    public function registerURLs()
+    {
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules['remote-sync/google-drive/auth'] = 'remote-sync/google-drive/auth';
+                $event->rules['remote-sync/google-drive/auth-redirect'] = 'remote-sync/google-drive/auth-redirect';
+            }
+        );
+    }
+
+    /**
+     * Register Console Controllers
+     * 
+     */
+    public function registerConsoleControllers()
+    {
+        if (Craft::$app instanceof ConsoleApplication) {
+            $this->controllerNamespace = 'weareferal\remotesync\console\controllers';
+        }
+    }
+
+    /**
+     * Register Services
+     * 
+     */
+    public function registerServices()
+    {
+        $this->setComponents([
+            'provider' => Craft::$app->getModule('remote-core')->providerFactory->create($this),
+            'prune' => PruneService::class
+        ]);
+    }
+
+    /**
+     * Register Utilities
+     * 
+     */
+    public function registerUtilties()
+    {
         if ($this->getSettings()->enabled) {
             Event::on(
                 Utilities::class,
@@ -80,12 +134,20 @@ class RemoteSync extends Plugin
     protected function settingsHtml(): string
     {
         $view = Craft::$app->getView();
-        $view->registerAssetBundle(RemoteSyncSettingAsset::class);
-        $view->registerJs("new Craft.RemoteSyncSettings('main-form');");
+        $view->registerAssetBundle(RemoteCoreSettingsAsset::class);
+        $view->registerJs("new Craft.RemoteCoreSettings('main-form');");
+
+        $isAuthenticated = $this->provider->isAuthenticated();
+        $isConfigured = $this->provider->isConfigured();
+
         return $view->renderTemplate(
             'remote-sync/settings',
             [
-                'settings' => $this->getSettings()
+                'plugin' => $this,
+                'pluginHandle' => $this->getHandle(),
+                'settings' => $this->getSettings(),
+                'isConfigured' => $isConfigured,
+                'isAuthenticated' => $isAuthenticated
             ]
         );
     }

@@ -17,6 +17,8 @@ use weareferal\RemoteSync\queue\PruneVolumesJob;
 use weareferal\RemoteSync\queue\DeleteDatabaseJob;
 use weareferal\RemoteSync\queue\DeleteVolumeJob;
 
+use weareferal\remotecore\helpers\RemoteFile;
+
 
 class RemoteSyncController extends Controller
 {
@@ -29,7 +31,7 @@ class RemoteSyncController extends Controller
 
     public function requirePluginConfigured()
     {
-        if (!RemoteSync::getInstance()->getSettings()->isConfigured()) {
+        if (!RemoteSync::getInstance()->provider->isConfigured()) {
             throw new BadRequestHttpException('Plugin is not correctly configured');
         }
     }
@@ -42,8 +44,10 @@ class RemoteSyncController extends Controller
         $this->requirePluginConfigured();
 
         try {
+            $remoteFiles = RemoteSync::getInstance()->provider->listDatabases();
+            $options = RemoteFile::toHTMLOptions($remoteFiles);
             return $this->asJson([
-                "backups" => RemoteSync::getInstance()->remotesync->listDatabases(),
+                "options" => $options,
                 "success" => true
             ]);
         } catch (\Exception $e) {
@@ -60,8 +64,10 @@ class RemoteSyncController extends Controller
         $this->requirePluginConfigured();
 
         try {
+            $remoteFiles = RemoteSync::getInstance()->provider->listVolumes();
+            $options = RemoteFile::toHTMLOptions($remoteFiles);
             return $this->asJson([
-                "backups" => RemoteSync::getInstance()->remotesync->listVolumes(),
+                "options" => $options,
                 "success" => true
             ]);
         } catch (\Exception $e) {
@@ -77,8 +83,8 @@ class RemoteSyncController extends Controller
         $this->requirePluginEnabled();
         $this->requirePluginConfigured();
 
-        $settings = RemoteSync::getInstance()->getSettings();
-        $service = RemoteSync::getInstance()->remotesync;
+        $plugin = RemoteSync::getInstance();
+        $settings = $plugin->getSettings();
         $queue = Craft::$app->queue;
 
         try {
@@ -86,7 +92,7 @@ class RemoteSyncController extends Controller
                 $queue->push(new PushDatabaseJob());
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                $service->pushDatabase();
+                $plugin->provider->pushDatabase();
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Database pushed'));
             }
 
@@ -94,7 +100,7 @@ class RemoteSyncController extends Controller
                 if ($settings->useQueue) {
                     $queue->push(new PruneDatabasesJob());
                 } else {
-                    $service->pruneDatabases();
+                    $plugin->prune->pruneDatabases();
                 }
             }
         } catch (\Exception $e) {
@@ -115,8 +121,8 @@ class RemoteSyncController extends Controller
         $this->requirePluginEnabled();
         $this->requirePluginConfigured();
 
-        $settings = RemoteSync::getInstance()->getSettings();
-        $service = RemoteSync::getInstance()->remotesync;
+        $plugin = RemoteSync::getInstance();
+        $settings = $plugin->getSettings();
         $queue = Craft::$app->queue;
 
         try {
@@ -124,7 +130,7 @@ class RemoteSyncController extends Controller
                 $queue->push(new PushVolumeJob());
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                $service->pushVolumes();
+                $plugin->provider->pushVolumes();
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Volumes pushed'));
             }
 
@@ -132,7 +138,7 @@ class RemoteSyncController extends Controller
                 if ($settings->useQueue) {
                     $queue->push(new PruneVolumesJob());
                 } else {
-                    $service->pruneVolumes();
+                    $plugin->prune->pruneVolumes();
                 }
             }
         } catch (\Exception $e) {
@@ -164,7 +170,7 @@ class RemoteSyncController extends Controller
                 ]));
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                $plugin->remotesync->pullDatabase($filename);
+                $plugin->provider->pullDatabase($filename);
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Database pulled'));
             }
         } catch (\Exception $e) {
@@ -196,7 +202,7 @@ class RemoteSyncController extends Controller
                 ]));
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                $plugin->remotesync->pullVolume($filename);
+                $plugin->provider->pullVolume($filename);
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Volumes pulled'));
             }
         } catch (\Exception $e) {
@@ -229,7 +235,7 @@ class RemoteSyncController extends Controller
                 ]));
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                RemoteSync::getInstance()->remotesync->deleteDatabase($filename);
+                RemoteSync::getInstance()->provider->deleteDatabase($filename);
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Database deleted'));
             }
         } catch (\Exception $e) {
@@ -261,7 +267,7 @@ class RemoteSyncController extends Controller
                 ]));
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Job added to queue'));
             } else {
-                RemoteSync::getInstance()->remotesync->deleteVolume($filename);
+                RemoteSync::getInstance()->provider->deleteVolume($filename);
                 Craft::$app->getSession()->setNotice(Craft::t('remote-sync', 'Volumes deleted'));
             }
         } catch (\Exception $e) {

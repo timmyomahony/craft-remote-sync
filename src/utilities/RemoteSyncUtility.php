@@ -33,7 +33,8 @@ class RemoteSyncUtility extends Utility
         $view->registerJs("new Craft.RemoteSyncUtility('rb-utilities-volumes')");
 
         $settings = RemoteSync::getInstance()->getSettings();
-        $volumesConfigured = count(Craft::$app->getVolumes()->getAllVolumes()) > 0;
+        $service = RemoteSync::getInstance()->provider;
+        $haveVolumes = count(Craft::$app->getVolumes()->getAllVolumes()) > 0;
         $queueActive = Craft::$app->queue->getHasWaitingJobs();
 
         return $view->renderTemplate('remote-sync/utilities/remote-sync', [

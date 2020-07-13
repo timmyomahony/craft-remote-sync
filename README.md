@@ -2,7 +2,7 @@
 
 <img src="src/icon.svg" width="125px">
 
-Sync your database and assets across Craft environments using a remote destination like AWS S3.
+Sync your database and assets across Craft environments using a remote destinations (AWS, Digital Ocean, Google Drive, Backblaze, Dropbox)
 
 ## Overview
 
@@ -12,7 +12,7 @@ Craft Remote Sync makes it easy to sync your database and volume assets across a
 
 This makes it much easier to move your site from local development to staging and onto production and avoids the need to regularly SSH into servers to perform database dumps and restores.
 
-To achieve this, the plugin uses a remote "single source of truth" (currently a S3 bucket) to push and pull database and asset/volumes files from.
+To achieve this, the plugin uses a remote "single source of truth" to push and pull database and asset/volumes files from.
 
 ![Craft Remote Sync Overview](./resources/img/overview.png)
 
@@ -44,56 +44,17 @@ To install the plugin, follow these instructions.
 
 ## Configuration
 
-The easiest way to configure Remote Sync is via the settings page:
+Remote Sync supports a number of destinations to push files to. Each provider has slightly different configuration so please follow the links below to get a short guide for configuring your preferred provider.
 
-![Craft Remote Sync Overview](resources/img/settings-screenshot.png)
+Bear in mind that you will need to additionally install the relevent SDK for your provider.
 
-Alternatively, if you want to configure the plugin on a per-environment basis, you can copy the `config/remote-sync.example.php` to your project's `config/remote-sync.php` file. These settings will override the Control Panel settings.
+- [Amazon S3](https://github.com/weareferal/craft-remote-backup/wiki/Amazon-S3)
+- [Backblaze B2](https://github.com/weareferal/craft-remote-backup/wiki/Backblaze-B2)
+- [Dropbox](https://github.com/weareferal/craft-remote-backup/wiki/Dropbox)
+- [Google Drive](https://github.com/weareferal/craft-remote-backup/wiki/Google-Drive)
+- [Digital Ocean Spaces](https://github.com/weareferal/craft-remote-backup/wiki/Digital-Ocean-Spaces)
 
-```php
-<?php
-return [
-    '*' => [
-        'cloudProvider' => 's3',
-        // Provider-specific details can be added here
-        // ...
-        'useQueue' => false,
-				'keepEmergencyBackup' => true,
-        'prune' => false,
-        'pruneLimit' => 10,
-        'hideDatabases' => true,
-        'hideVolumes' => true
-    ],
-    'dev' => [],
-    'staging' => [],
-    'production' => [],
-];
-
-```
-
-Whichever approach you choose, you need to first configure your remote provider settings.
-
-### Providers
-
-Currently the only available provider is AWS S3 but more are to come soon (if you require another provider, please leave an issue on Github)
-
-#### AWS
-
-The details entered here correspond to your AWS S3 account and bucket that you want to use to sync files to. It's recommended to set up a new IAM user that has programmatic access (meaning via a access/secret key) to a private S3 bucket.
-
-Once you have set this bucket up, you can either enter your AWS S3 details directly into the setting page/config file, or you can use environment variables via your `.env` file (this is the recommended approach as seen in the screenshot above). This latter approach is more portable and secure as it prevents any private access/secret key values being included in files that you might commit to Github. Furthermore is means these variables can be reused in other plugins etc.
-
-Here is an example portion of a `.env` file:
-
-```sh
-...
-
-AWS_ACCESS_KEY="..."
-AWS_SECRET_KEY="..."
-AWS_REGION="us-west-2"
-AWS_BUCKET_NAME="feral-backups"
-AWS_BUCKET_PREFIX="craft-backups/my-site"
-```
+In each case you will be required to configure the plugin via the Contorl Panel settings page and optional (but recommended) environment variables.
 
 ## Usage
 
@@ -105,8 +66,8 @@ From the "Remote Sync" tab in the utilities section you can:
 
 - **Push** your database: this will automatically dump the database on your server and send it to your remote provider
 - **Push** your volumes: this will automatically zip all configured volumes on your server and send them to your remote provider
-- **Pull** your database: this will download the chosen remote database file and restore it locally to your server
-- **Pull** your volumes: this will download the chosen remote volumes zip files and restore them all locally to your server
+- **Pull & Restore** your database: this will download the chosen remote database file and restore it locally to your server
+- **Pull & Restore** your volumes: this will download the chosen remote volumes zip files and restore them all locally to your server
 - **Delete** you database/volumes: this will delete the chosen remote file
 
 ### Command Line
@@ -135,11 +96,11 @@ There are also console commands available for creating, pushing and pulling back
 
 You can optionally use Craft's built-in queue to sync files. This is useful when they are large and you don't want to have to wait on the Control Panel interface every time you backup. Instead, the files will be added to the queue and completed in the background.
 
-You can enable this via the "Use Queue" lightswitch in the settings or via the `userQueue` setting in your config.
+You can enable this via the "Use Queue" lightswitch in the settings or via the `useQueue` setting in your config.
 
 #### ⚠️ CLI commands
 
-The CLI commands ignore the queue setting. In other words, they will always run synchrously. This is by design as it's likely you will want to see the results of these operations if they are part of your crontab or deployment script.
+The CLI commands ignore the queue setting. In other words, they will always run synchronously. This is by design as it's likely you will want to see the results of these operations if they are part of your crontab or deployment script.
 
 ### Emergency Backup
 

@@ -1,176 +1,39 @@
+{% extends "remote-core/settings" %}
+
+{% from "remote-core/macros" import configWarning %}
 {% import "_includes/forms" as forms %}
 
-{% macro configWarning(setting, file) -%}
-    {%- set configArray = craft.app.config.getConfigFromFile(file) -%}
-    {%- if configArray[setting] is defined -%}
-        {{- "This is being overridden by the `#{setting}` setting in the `config/#{file}.php` file." |raw }}
-    {%- else -%}
-        {{ false }}
-    {%- endif -%}
-{%- endmacro %}
-{% from _self import configWarning %}
+{% block customSettings %}
+    {{ forms.lightswitchField({
+        label: "Prune Files"|t('remote-sync'),
+        instructions: "Delete older remote files when new files pushed"|t('remote-sync'),
+        name: 'prune',
+        id: 'prune',
+        on: settings.prune,
+        errors: settings.getErrors('prune'),
+        warning: configWarning('prune', 'remote-sync')
+    }) }}
 
-{{ forms.lightswitchField({
-    first: true,
-    label: "Enabled"|t('remote-sync'),
-    instructions: "Enable the plugin"|t('remote-sync'),
-    name: 'enabled',
-    id: 'enabled',
-    on: settings.enabled,
-    errors: settings.getErrors('enabled'),
-    warning: configWarning('enabled', 'remote-sync')
-}) }}
+    {{ forms.textField({
+        label: "Prune limit"|t('remote-sync'),
+        type: "number",
+        instructions: "The number of most recent files to keep when pruning."|t('remote-sync'),
+        name: 'pruneLimit',
+        id: 'pruneLimit',
+        value: settings.pruneLimit,
+        errors: settings.getErrors('pruneLimit'),
+        warning: configWarning('pruneLimit', 'remote-sync')
+    }) }}
 
-<hr>
+    <hr>
 
-{{ forms.selectField({
-    first: true,
-    label: "Cloud Provider"|t('remote-sync'),
-    id: 'cloudProvider',
-    name: 'cloudProvider',
-    options: [
-        { label: 'Amazon S3', value: 's3' }
-    ],
-    value: settings.cloudProvider,
-    required: true,
-    errors: settings.getErrors('cloudProvider'),
-    warning: configWarning('cloudProvider', 'remote-sync')
-}) }}
-
-{{ forms.autosuggestField({
-    label: "S3 Access Key"|t('remote-sync'),
-    instructions: "The access key associated with your IAM user"|t('remote-sync'),
-    name: 's3AccessKey',
-    id: 's3AccessKey',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3AccessKey,
-    required: (settings.s3AccessKey == 's3'),
-    type: 'password',
-    errors: settings.getErrors('s3AccessKey'),
-    warning: configWarning('s3AccessKey', 'remote-sync')
-}) }}
-
-{{ forms.autosuggestField({
-    label: "S3 Secret Key",
-    instructions: "The secret key associated with your IAM user"|t('remote-sync'),
-    name: 's3SecretKey',
-    id: 's3SecretKey',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3SecretKey,
-    required: (settings.s3SecretKey == 's3'),
-    type: 'password',
-    errors: settings.getErrors('s3SecretKey'),
-    warning: configWarning('s3SecretKey', 'remote-sync')
-}) }}
-
-{{ forms.autosuggestField({
-    label: "S3 Bucket Name"|t('remote-sync'),
-    instructions: "The name of the S3 bucket you want to send backups to"|t('remote-sync'),
-    name: 's3BucketName',
-    id: 's3BucketName',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3BucketName,
-    placeholder: "my-craft-backups",
-    required: (settings.s3BucketName == 's3'),
-    errors: settings.getErrors('s3BucketName'),
-    warning: configWarning('s3BucketName', 'remote-sync')
-}) }}
-
-{{ forms.autosuggestField({
-    label: "S3 Region Name"|t('remote-sync'),
-    instructions: "The AWS region your S3 bucket is in"|t('remote-sync'),
-    name: 's3RegionName',
-    id: 's3RegionName',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3RegionName,
-    placeholder: "us-west-2",
-    required: (settings.s3RegionName == 's3'),
-    errors: settings.getErrors('s3RegionName'),
-    warning: configWarning('s3RegionName', 'remote-sync')
-}) }}
-
-{{ forms.autosuggestField({
-    label: "S3 Bucket Prefix"|t('remote-sync'),
-    instructions: "A path within your S3 bucket to prefix your backups with. Do not include a leading or trailing slash"|t('remote-sync'),
-    name: 's3BucketPrefix',
-    id: 's3BucketPrefix',
-    suggestEnvVars: true,
-    suggestAliases: true,
-    value: settings.s3BucketPrefix,
-    placeholder: "craft-backups/my-site",
-    errors: settings.getErrors('s3BucketPrefix'),
-    warning: configWarning('s3BucketPrefix', 'remote-sync')
-}) }}
-
-<hr>
-
-{{ forms.lightswitchField({
-    label: "Use Queue"|t('remote-sync'),
-    instructions: "Use the built-in Craft queue for performing backup operations"|t('remote-sync'),
-    name: 'useQueue',
-    id: 'useQueue',
-    on: settings.useQueue,
-    errors: settings.getErrors('useQueue'),
-    warning: configWarning('useQueue', 'remote-sync')
-}) }}
-
-<hr>
-
-{{ forms.lightswitchField({
-    label: "Prune Files"|t('remote-sync'),
-    instructions: "Delete older remote files when new files pushed"|t('remote-sync'),
-    name: 'prune',
-    id: 'prune',
-    on: settings.prune,
-    errors: settings.getErrors('prune'),
-    warning: configWarning('prune', 'remote-sync')
-}) }}
-
-{{ forms.textField({
-    label: "Prune limit"|t('remote-sync'),
-    type: "number",
-    instructions: "The number of most recent files to keep when pruning."|t('remote-sync'),
-    name: 'pruneLimit',
-    id: 'pruneLimit',
-    value: settings.pruneLimit,
-    errors: settings.getErrors('pruneLimit'),
-    warning: configWarning('pruneLimit', 'remote-sync')
-}) }}
-
-<hr>
-
-{{ forms.lightswitchField({
-    label: "Keep an Emergency Backup"|t('remote-sync'),
-    instructions: "Create an emergency backup before pulling & restoring."|t('remote-sync'),
-    name: 'keepEmergencyBackup',
-    id: 'keepEmergencyBackup',
-    on: settings.keepEmergencyBackup,
-    errors: settings.getErrors('keepEmergencyBackup'),
-    warning: configWarning('keepEmergencyBackup', 'remote-sync')
-}) }}
-
-<hr>
-
-{{ forms.lightswitchField({
-    label: "Hide Databases"|t('remote-sync'),
-    instructions: "Hide the database section altogether from the utilities page"|t('remote-sync'),
-    name: 'hideDatabases',
-    id: 'hideDatabases',
-    on: settings.hideDatabases,
-    errors: settings.getErrors('hideDatabases'),
-    warning: configWarning('hideDatabases', 'remote-sync')
-}) }}
-
-{{ forms.lightswitchField({
-    label: "Hide Volumes"|t('remote-sync'),
-    instructions: "Hide the volumes section altogether from the utiltiies page"|t('remote-sync'),
-    name: 'hideVolumes',
-    id: 'hideVolumes',
-    on: settings.hideVolumes,
-    errors: settings.getErrors('hideVolumes'),
-    warning: configWarning('hideVolumes', 'remote-sync')
-}) }}
+    {{ forms.lightswitchField({
+        label: "Keep an Emergency Backup"|t('remote-sync'),
+        instructions: "Create an emergency backup before pulling & restoring."|t('remote-sync'),
+        name: 'keepEmergencyBackup',
+        id: 'keepEmergencyBackup',
+        on: settings.keepEmergencyBackup,
+        errors: settings.getErrors('keepEmergencyBackup'),
+        warning: configWarning('keepEmergencyBackup', 'remote-sync')
+    }) }}
+{% endblock %}

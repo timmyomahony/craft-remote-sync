@@ -12,7 +12,7 @@ class DeleteDatabaseJob extends BaseJob
 
     public function execute($queue)
     {
-        RemoteSync::getInstance()->remotesync->deleteDatabase($this->filename);
+        RemoteSync::getInstance()->provider->deleteDatabase($this->filename);
     }
 
     protected function defaultDescription()
