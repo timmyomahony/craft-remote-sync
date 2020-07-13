@@ -165,7 +165,7 @@ AWS_REGION="us-west-1"
 AWS_BUCKET_NAME="feral-backups"
 AWS_BUCKET_NAME="feral-backups"
 AWS_BUCKET_SYNC_PREFIX="craft-sync/craft-test"
-AWS_BUCKET_BACKUP_PREFIX="craft-backups/craft-test"
+AWS_BUCKET_BACKUP_PREFIX="craft-backup/craft-test"
 ```
 
 ## Troubleshooting
@@ -180,4 +180,4 @@ When are syncing volumes, it's possible that your PHP memory limit will cause th
 
 <img src="resources/img/feral-logo.svg" width="250px">
 
-Brought to you by [Feral](https://weareferal.com). Any problems email [timmy@weareferal.com](mailto:timmy@weareferal.com?subject=Craft%20Env%20Sync%20Question) or leave an issue on Github.
+Brought to you by [Feral](https://weareferal.com). Any problems please leave an issue on Github.
