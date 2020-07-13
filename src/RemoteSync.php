@@ -143,6 +143,8 @@ class RemoteSync extends Plugin
         return $view->renderTemplate(
             'remote-sync/settings',
             [
+                'plugin' => $this,
+                'pluginHandle' => $this->getHandle(),
                 'settings' => $this->getSettings(),
                 'isConfigured' => $isConfigured,
                 'isAuthenticated' => $isAuthenticated
