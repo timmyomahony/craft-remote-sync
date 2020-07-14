@@ -54,3 +54,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Fixed strange merge issues from release :(
+
+## 1.3.2 - 2020-07-14
+
+### Changed
+
+- Made Backblaze B2 settings labels clearer
