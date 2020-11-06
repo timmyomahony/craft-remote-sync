@@ -66,3 +66,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Fixed composer 2 autoload issue (issue #33)
+
+## 1.3.4 - 2020-11-06
+
+### Changed
+
+- Updated core library version
