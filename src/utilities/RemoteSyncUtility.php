@@ -5,7 +5,7 @@ namespace weareferal\remotesync\utilities;
 use Craft;
 use craft\base\Utility;
 
-use weareferal\remotesync\assets\remotesyncutility\RemoteSyncUtilityAsset;
+use weareferal\remotesync\assets\RemoteSyncUtility\RemoteSyncUtilityAsset;
 use weareferal\remotesync\RemoteSync;
 
 class RemoteSyncUtility extends Utility
