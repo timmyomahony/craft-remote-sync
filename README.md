@@ -2,7 +2,7 @@
 
 <img src="src/icon.svg" width="125px">
 
-Sync your database and assets across Craft environments using a remote destinations (AWS, Digital Ocean, Google Drive, Backblaze, Dropbox)
+Sync your database and assets across Craft environments via a remote destinations (AWS, Digital Ocean, Google Drive, Backblaze, Dropbox).
 
 ## Overview
 
@@ -44,9 +44,9 @@ To install the plugin, follow these instructions.
 
 ## Configuration
 
-Remote Sync supports a number of destinations to push files to. Each provider has slightly different configuration so please follow the links below to get a short guide for configuring your preferred provider.
+Remote Sync supports a number of cloud providers. Each provider has slightly different configuration so please follow the links below to get a short guide for configuring your preferred provider.
 
-Bear in mind that you will need to additionally install the relevent SDK for your provider.
+Bear in mind that you will need to additionally install the relevant SDK for your provider.
 
 - [Amazon S3](https://github.com/weareferal/craft-remote-backup/wiki/Amazon-S3)
 - [Backblaze B2](https://github.com/weareferal/craft-remote-backup/wiki/Backblaze-B2)
@@ -54,11 +54,11 @@ Bear in mind that you will need to additionally install the relevent SDK for you
 - [Google Drive](https://github.com/weareferal/craft-remote-backup/wiki/Google-Drive)
 - [Digital Ocean Spaces](https://github.com/weareferal/craft-remote-backup/wiki/Digital-Ocean-Spaces)
 
-In each case you will be required to configure the plugin via the Contorl Panel settings page and optional (but recommended) environment variables.
+In each case you will be required to configure the plugin via the Control Panel settings page and optional (but recommended) environment variables.
 
 ## Usage
 
-### Control Panel Utilties
+### Control Panel Utilities
 
 ![Craft Remote Sync Utilities Screenshot](resources/img/utilities-screenshot.png)
 
@@ -96,7 +96,7 @@ There are also console commands available for creating, pushing and pulling back
 
 You can optionally use Craft's built-in queue to sync files. This is useful when they are large and you don't want to have to wait on the Control Panel interface every time you backup. Instead, the files will be added to the queue and completed in the background.
 
-You can enable this via the "Use Queue" lightswitch in the settings or via the `useQueue` setting in your config.
+You can enable this via the "Use Queue" light-switch in the settings or via the `useQueue` setting in your config.
 
 #### ⚠️ CLI commands
 
@@ -106,7 +106,7 @@ The CLI commands ignore the queue setting. In other words, they will always run 
 
 When enabled, a local copy of both current database or volumes will be created and saved *before* pull & restoring a remote version.
 
-This is a last resort in case you accidently pull and restore something you didn't mean to. Bear in mind that only 1 emergency backup is kept:
+This is a last resort in case you accidentally pull and restore something you didn't mean to. Bear in mind that only 1 emergency backup is kept:
 
 - `storage/sync/emergency-backup.sql` (database)
 - `storage/sync/emergency-backup.zip` (volumes)
