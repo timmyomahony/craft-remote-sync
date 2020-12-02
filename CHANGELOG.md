@@ -72,3 +72,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Updated core library version
+
+## 1.3.4 - [TODO]
+
+### Changed
+
+- Moved shared utilities JS and CSS to core module

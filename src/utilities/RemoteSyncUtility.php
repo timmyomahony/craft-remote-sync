@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Utility;
 
 use weareferal\remotesync\assets\RemoteSyncUtility\RemoteSyncUtilityAsset;
+use weareferal\remotecore\assets\RemoteCoreUtility\RemoteCoreUtilityAsset;
 use weareferal\remotesync\RemoteSync;
 
 class RemoteSyncUtility extends Utility
@@ -28,6 +29,7 @@ class RemoteSyncUtility extends Utility
     public static function contentHtml(): string
     {
         $view = Craft::$app->getView();
+        $view->registerAssetBundle(RemoteCoreUtilityAsset::class);
         $view->registerAssetBundle(RemoteSyncUtilityAsset::class);
         $view->registerJs("new Craft.RemoteSyncUtility('rb-utilities-database')");
         $view->registerJs("new Craft.RemoteSyncUtility('rb-utilities-volumes')");
