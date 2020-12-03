@@ -100,7 +100,7 @@ You can enable this via the "Use Queue" light-switch in the settings or via the 
 
 #### ⚠️ CLI commands
 
-The CLI commands ignore the queue setting. In other words, they will always run synchronously. This is by design as it's likely you will want to see the results of these operations if they are part of your crontab or deployment script.
+The CLI commands ignore the queue setting. In other words, they will always run synchronously. This is by design as it's likely you will want to see the results of these operations if they are part of your crontab or deployment script. 
 
 ### Emergency Backup
 
@@ -176,7 +176,19 @@ If you are getting errors, the first thing to check is the Craft logs at `storag
 
 When are syncing volumes, it's possible that your PHP memory limit will cause the process to crash. Make sure your memory limit is > than the volume folder you are trying to backup.
 
-#### TTR (Time to Reserve)
+### Large Files
+
+If you have a lot of volume files or a large database to back up, there are a number of potential issues you may face.
+
+#### Storage Issues
+
+All data from your volumes is copied to the local server before being sent to the remote destination. It is then zipped and sent to the remote destination. This means that for every 1Gb you want to backup, you need 2Gb extra space.
+
+#### Queue Operations Failing
+
+If you are backing up via the web interface and using the queue, you might notice backup operations failing (sometimes silently)
+
+##### TTR (Time to Reserve)
 
 TTR ("Time To Reserve") is the max time (in seconds) that a queue operation can take. This is a Craft setting and not a PHP setting, so it's not affected by the `max_execution` time.
 

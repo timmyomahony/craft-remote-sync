@@ -36,15 +36,17 @@ class VolumeController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
+            $startTime = microtime(true);
             $remoteFiles = RemoteSync::getInstance()->provider->listVolumes();
             if (count($remoteFiles) <= 0) {
                 $this->stdout("No remote volumes" . PHP_EOL, Console::FG_YELLOW);
             } else {
                 $this->stdout("Remote volumes:" . PHP_EOL, Console::FG_GREEN);
                 foreach ($remoteFiles as $remoteFile) {
-                    $this->stdout(" " . $remoteFile->filename . PHP_EOL);
+                    $this->stdout("- " . $remoteFile->filename . PHP_EOL);
                 }
             }
+            $this->printTime($startTime);
         } catch (\Exception $e) {
             Craft::$app->getErrorHandler()->logException($e);
             $this->stderr('Error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
@@ -61,13 +63,15 @@ class VolumeController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
+            $startTime = microtime(true);
             $filename = RemoteSync::getInstance()->provider->pushVolumes();
             if (!$filename) {
                 $this->stdout("No remote volumes" . PHP_EOL, Console::FG_YELLOW);
             } else {
                 $this->stdout("Pushed local volume to remote destination:" . PHP_EOL, Console::FG_GREEN);
-                $this->stdout(" " . $filename . PHP_EOL);
+                $this->stdout("- " . $filename . PHP_EOL);
             }
+            $this->printTime($startTime);
         } catch (\Exception $e) {
             Craft::$app->getErrorHandler()->logException($e);
             $this->stderr('Error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
@@ -89,15 +93,17 @@ class VolumeController extends Controller
                 $this->stderr("Pruning disabled. Please enable via the Remote Sync control panel settings" . PHP_EOL, Console::FG_YELLOW);
                 return ExitCode::CONFIG;
             } else {
+                $startTime = microtime(true);
                 $filenames = $plugin->prune->pruneVolumes();
                 if (count($filenames) <= 0) {
                     $this->stdout("No volume files deleted" . PHP_EOL, Console::FG_YELLOW);
                 } else {
                     $this->stdout("Deleted volume files:" . PHP_EOL, Console::FG_GREEN);
                     foreach ($filenames as $filename) {
-                        $this->stdout(" " . $filename . PHP_EOL);
+                        $this->stdout("- " . $filename . PHP_EOL);
                     }
                 }
+                $this->printTime($startTime);
                 return ExitCode::OK;
             }
         } catch (\Exception $e) {
@@ -116,9 +122,11 @@ class VolumeController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
+            $startTime = microtime(true);
             RemoteSync::getInstance()->provider->pullVolume($filename);
             $this->stdout("Pulled and restored remote volume:" . PHP_EOL, Console::FG_GREEN);
-            $this->stdout(" " . $filename . PHP_EOL);
+            $this->stdout("- " . $filename . PHP_EOL);
+            $this->printTime($startTime);
         } catch (\Exception $e) {
             Craft::$app->getErrorHandler()->logException($e);
             $this->stderr('Error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
@@ -135,14 +143,20 @@ class VolumeController extends Controller
         try {
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
+            $startTime = microtime(true);
             RemoteSync::getInstance()->provider->deleteVolume($filename);
             $this->stdout("Deleted remote volume:" . PHP_EOL, Console::FG_GREEN);
-            $this->stdout(" " . $filename . PHP_EOL);
+            $this->stdout("- " . $filename . PHP_EOL);
+            $this->printTime($startTime);
         } catch (\Exception $e) {
             Craft::$app->getErrorHandler()->logException($e);
             $this->stderr('Error: ' . $e->getMessage() . PHP_EOL, Console::FG_RED);
             return ExitCode::UNSPECIFIED_ERROR;
         }
         return ExitCode::OK;
+    }
+
+    protected function printTime($startTime) {
+        $this->stdout("Started at " . (string) date("Y-m-d H:i:s") .  ". Duration " . (string) number_format(microtime(true) - $startTime, 2)  . " seconds" . PHP_EOL);
     }
 }
