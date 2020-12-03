@@ -78,3 +78,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Moved shared utilities JS and CSS to core module
+- Updated the formatting for file table

@@ -42,10 +42,13 @@ class RemoteSyncController extends Controller
         $this->requirePermission('remotesync');
         $this->requirePluginEnabled();
         $this->requirePluginConfigured();
+        
+        $plugin = RemoteSync::getInstance();
+        $settings = $plugin->getSettings();
 
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listDatabases();
-            $options = RemoteFile::toHTMLOptions($remoteFiles);
+            $options = RemoteFile::toHTMLOptions($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
                 "options" => $options,
                 "success" => true
@@ -62,10 +65,13 @@ class RemoteSyncController extends Controller
         $this->requirePermission('remotesync');
         $this->requirePluginEnabled();
         $this->requirePluginConfigured();
-
+        
+        $plugin = RemoteSync::getInstance();
+        $settings = $plugin->getSettings();
+        
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listVolumes();
-            $options = RemoteFile::toHTMLOptions($remoteFiles);
+            $options = RemoteFile::toHTMLOptions($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
                 "options" => $options,
                 "success" => true
