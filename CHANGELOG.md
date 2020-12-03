@@ -75,7 +75,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## 1.3.4 - [TODO]
 
+### Added
+
+- Added TTR to queue jobs (issue #38)
+
 ### Changed
 
+- Updated readme to call-out cron requirement
+- Fixed filename regex (issue #26 on craft-remote-sync)
 - Moved shared utilities JS and CSS to core module
-- Updated the formatting for file table
+- Updated the formatting for file table (issue #10 on craft-remote-backup)
