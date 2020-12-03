@@ -2,6 +2,7 @@
 
 namespace weareferal\remotesync\queue;
 
+use Craft;
 use craft\queue\BaseJob;
 use yii\queue\RetryableJobInterface;
 
@@ -22,11 +23,12 @@ class PushVolumeJob extends BaseJob implements RetryableJobInterface
 
     protected function defaultDescription()
     {
-        return 'Push volumes';
+        return Craft::t('remote-sync', 'Push volumes');
     }
     
     public function canRetry($attempt, $error)
     {
+        // If true, errors aren't reported in the Craft Utilities queue manager
         return true;
     }
 }

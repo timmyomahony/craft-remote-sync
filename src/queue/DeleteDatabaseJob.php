@@ -2,6 +2,7 @@
 
 namespace weareferal\remotesync\queue;
 
+use Craft;
 use craft\queue\BaseJob;
 use yii\queue\RetryableJobInterface;
 
@@ -24,11 +25,12 @@ class DeleteDatabaseJob extends BaseJob implements RetryableJobInterface
 
     protected function defaultDescription()
     {
-        return 'Delete remote database';
+        return Craft::t('remote-sync', 'Delete remote database');
     }
 
     public function canRetry($attempt, $error)
     {
+        // If true, errors aren't reported in the Craft Utilities queue manager
         return true;
     }
 }
