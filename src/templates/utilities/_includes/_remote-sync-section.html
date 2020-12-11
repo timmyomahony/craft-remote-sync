@@ -20,12 +20,12 @@
                     <button class="btn small delete-button" title="{{ 'Delete ' ~ label|lower|t }}">{{ 'Delete'|t }}</button>
                 </td>
             </tr>
-            <tr class="first default-row no-results-row">
+            <tr class="default-row no-results-row">
                 <td class="light">
                     {{ "No " ~ labelPlural|t('remote-sync') }}
                 </td>
             </tr>
-            <tr class="first default-row errors-row">
+            <tr class="default-row errors-row">
                 <td class="error">
                     {{ "Error Fetching " ~ labelPlural|t('remote-sync') }}
                 </td>
