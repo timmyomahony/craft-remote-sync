@@ -1,8 +1,8 @@
 {
+    "minimum-stability": "dev",
     "name": "weareferal/remote-sync",
     "description": "Sync your database and assets across Craft environments",
     "type": "craft-plugin",
-    "version": "4.0.0",
     "keywords": [
         "craft",
         "cms",
