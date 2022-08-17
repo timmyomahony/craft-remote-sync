@@ -1,7 +1,5 @@
 # Craft Remote Sync
 
-<img src="src/icon.svg" width="125px">
-
 Sync your database and assets across Craft environments via a remote destinations (AWS, Digital Ocean, Google Drive, Backblaze, Dropbox).
 
 ## Overview
@@ -198,6 +196,4 @@ Remote Backup offers an easy way to adjust this value via the settings page, so 
 
 ## Support
 
-<img src="resources/img/feral-logo.svg" width="250px">
-
-Brought to you by [Feral](https://weareferal.com). Any problems please leave an issue on Github.
+If you have any problems please leave an issue on Github or find us on the Craft Discord (username timmy).
