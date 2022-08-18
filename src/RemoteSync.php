@@ -10,6 +10,7 @@
 namespace weareferal\remotesync;
 
 use Craft;
+use craft\console\Application as ConsoleApplication;
 use craft\base\Plugin;
 use craft\web\UrlManager;
 use craft\services\Utilities;
@@ -31,11 +32,11 @@ use weareferal\remotecore\assets\RemoteCoreSettings\RemoteCoreSettingsAsset;
 class RemoteSync extends Plugin
 {
 
-    public $hasCpSettings = true;
+    public bool $hasCpSettings = true;
 
     public static $plugin;
 
-    public $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.0.0';
 
     public function init()
     {
@@ -126,12 +127,12 @@ class RemoteSync extends Plugin
         }
     }
 
-    protected function createSettingsModel(): Settings
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
 
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
         $view = Craft::$app->getView();
         $view->registerAssetBundle(RemoteCoreSettingsAsset::class);

@@ -18,12 +18,12 @@ class DeleteDatabaseJob extends BaseJob implements RetryableJobInterface
         return RemoteSync::getInstance()->getSettings()->queueTtr;
     }
 
-    public function execute($queue)
+    public function execute($queue): void
     {
         RemoteSync::getInstance()->provider->deleteDatabase($this->filename);
     }
 
-    protected function defaultDescription()
+    protected function defaultDescription(): string|null
     {
         return Craft::t('remote-sync', 'Delete remote database');
     }

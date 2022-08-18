@@ -88,3 +88,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Fixed filename regex (issue #26 on craft-remote-sync)
 - Moved shared utilities JS and CSS to core module
 - Updated the formatting for file table (issue #10 on craft-remote-backup)
+
+## 4.0.0 - 2022-08-18
+
+### Added
+
+- Craft 4 compatibility. Version has jumped from 1.X.X to 4.X.X to make following Craft easier.

@@ -16,12 +16,12 @@ class PushDatabaseJob extends BaseJob implements RetryableJobInterface
         return RemoteSync::getInstance()->getSettings()->queueTtr;
     }
 
-    public function execute($queue)
+    public function execute($queue): void
     {
         RemoteSync::getInstance()->provider->pushDatabase();
     }
 
-    protected function defaultDescription()
+    protected function defaultDescription(): string|null
     {
         return Craft::t('remote-sync', 'Push database');
     }
