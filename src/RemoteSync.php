@@ -62,8 +62,9 @@ class RemoteSync extends Plugin
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function (RegisterUserPermissionsEvent $event) {
-                $event->permissions['Remote Sync'] = [
-                    'remotesync' => [
+                $event->permissions[] = [
+                    'label' => 'Remote Sync',
+                    'permissions' => [
                         'label' => 'Push and pull/restore database and volume assets',
                     ],
                 ];
