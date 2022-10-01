@@ -48,9 +48,9 @@ class RemoteSyncController extends Controller
 
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listDatabases();
-            $options = RemoteFile::toHTMLOptions($remoteFiles, $settings->displayDateFormat);
+            $files = RemoteFile::toObject($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
-                "options" => $options,
+                "files" => $files,
                 "success" => true
             ]);
         } catch (\Exception $e) {
@@ -71,9 +71,9 @@ class RemoteSyncController extends Controller
         
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listVolumes();
-            $options = RemoteFile::toHTMLOptions($remoteFiles, $settings->displayDateFormat);
+            $files = RemoteFile::toObject($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
-                "options" => $options,
+                "files" => $files,
                 "success" => true
             ]);
         } catch (\Exception $e) {
