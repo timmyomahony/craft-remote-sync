@@ -41,6 +41,7 @@ class RemoteSyncUtility extends Utility
         $queueActive = Craft::$app->queue->getHasWaitingJobs();
 
         return $view->renderTemplate('remote-sync/utilities/remote-sync', [
+            "cloudProvider" => $settings->cloudProvider,
             "isConfigured" => $provider->isConfigured(),
             "isAuthenticated" => $provider->isAuthenticated(),
             "hideDatabases" => $settings->hideDatabases,
