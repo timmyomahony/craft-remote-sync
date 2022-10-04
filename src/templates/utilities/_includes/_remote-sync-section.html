@@ -16,11 +16,13 @@
                 <th>{{ "Time" | t("remote-backup") }}</th>
                 <th>{{ "Environment" | t("remote-backup") }}</th>
                 <th>{{ "Version" | t("remote-backup") }}</th>
+                <th>{{ "Size" | t("remote-backup") }}</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             <tr class="default-row template-row">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -34,11 +36,21 @@
                 <td>
                     {{ "No " ~ labelPlural|t('remote-sync') }}
                 </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
             <tr class="default-row errors-row">
                 <td class="error">
                     {{ "Error Fetching " ~ labelPlural|t('remote-sync') }}
                 </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
         </tbody>
     </table>

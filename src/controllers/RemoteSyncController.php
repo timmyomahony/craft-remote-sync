@@ -48,7 +48,7 @@ class RemoteSyncController extends Controller
 
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listDatabases();
-            $files = RemoteFile::toObject($remoteFiles, $settings->displayDateFormat);
+            $files = RemoteFile::serialize($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
                 "files" => $files,
                 "success" => true
@@ -71,7 +71,7 @@ class RemoteSyncController extends Controller
         
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listVolumes();
-            $files = RemoteFile::toObject($remoteFiles, $settings->displayDateFormat);
+            $files = RemoteFile::serialize($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
                 "files" => $files,
                 "success" => true
