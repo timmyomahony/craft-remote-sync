@@ -1,10 +1,10 @@
 # Craft Remote Sync
 
-Sync your database and assets across Craft environments via a remote destinations (AWS, Digital Ocean, Google Drive, Backblaze, Dropbox).
+Sync your database and assets across Craft environments via a remote destinations (AWS, Digital Ocean, Google Drive, Backblaze).
 
 ## Overview
 
-![Craft Remote Sync Overview](resources/img/utilities-screenshot.png)
+![Craft Remote Sync Overview](resources/img/utilities-screenshot.jpg)
 
 Craft Remote Sync makes it easy to sync your database and volume assets across a number of different environments from the comfort of the Craft Control Panel.
 
@@ -48,7 +48,6 @@ Bear in mind that you will need to additionally install the relevant SDK for you
 
 - [Amazon S3](https://github.com/weareferal/craft-remote-backup/wiki/Amazon-S3)
 - [Backblaze B2](https://github.com/weareferal/craft-remote-backup/wiki/Backblaze-B2)
-- [Dropbox](https://github.com/weareferal/craft-remote-backup/wiki/Dropbox)
 - [Google Drive](https://github.com/weareferal/craft-remote-backup/wiki/Google-Drive)
 - [Digital Ocean Spaces](https://github.com/weareferal/craft-remote-backup/wiki/Digital-Ocean-Spaces)
 
@@ -58,7 +57,7 @@ In each case you will be required to configure the plugin via the Control Panel 
 
 ### Control Panel Utilities
 
-![Craft Remote Sync Utilities Screenshot](resources/img/utilities-screenshot.png)
+![Craft Remote Sync Utilities Screenshot](resources/img/utilities-screenshot.jpg)
 
 From the "Remote Sync" tab in the utilities section you can:
 
@@ -90,6 +89,10 @@ There are also console commands available for creating, pushing and pulling back
 
 ## Features
 
+### Connection Testing
+
+When setting up your remote destination, you can test the connection right from the settings page making it easy to troubleshoot issues. Use the "Test Connection" button below your provider settings to try it out.
+
 ### Queue
 
 You can optionally use Craft's built-in queue to sync files. This is useful when they are large and you don't want to have to wait on the Control Panel interface every time you backup. Instead, the files will be added to the queue and completed in the background.
@@ -119,7 +122,7 @@ The "prune limit" controls how many of the most recent files you keep when pushi
 
 When enabled, pruning will happen automatically while using the utilities interface. 
 
-####⚠️ CLI commands
+#### ⚠️ CLI commands
 
 You can prune the remote files using two CLI console commands:
 
