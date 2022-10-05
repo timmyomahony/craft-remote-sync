@@ -10,7 +10,7 @@ class RemoteSyncUtilityAsset extends AssetBundle
 {
     public function init()
     {
-        $this->sourcePath = __DIR__ . '/dist';
+        $this->sourcePath = '@weareferal/remotesync/assets/RemoteSyncUtility/dist';
 
         $this->depends = [
             CpAsset::class,

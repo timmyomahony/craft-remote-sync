@@ -26,7 +26,7 @@ use weareferal\remotesync\models\Settings;
 use weareferal\remotesync\services\PruneService;
 
 use weareferal\remotecore\RemoteCoreHelper;
-use weareferal\remotecore\assets\RemoteCoreSettings\RemoteCoreSettingsAsset;
+use weareferal\remotecore\assets\remotecoresettings\RemoteCoreSettingsAsset;
 
 
 class RemoteSync extends Plugin

@@ -36,6 +36,36 @@ class RemoteSyncController extends Controller
         }
     }
 
+    /**
+     * Test Provider
+     * 
+     * 
+     * @since 4.1.0
+     */
+    public function actionTestProvider()
+    {
+        $this->requireCpRequest();
+        $this->requirePermission('remotesync');
+        $this->requirePluginEnabled();
+        
+        $plugin = RemoteSync::getInstance();
+
+        try {
+            // Simply attempt to list all files
+            $plugin->provider->list('.sql');
+            return $this->asJson([
+                "success" => true
+            ]);
+        } catch (\Exception $e) {
+            return $this->asFailure(
+                Craft::t('remote-backup', 'Test failed'),
+                [
+                    "message" => $e->getMessage(),
+                    "trace" => $e->getTraceAsString()
+                ]);
+        }
+    }
+
     public function actionListDatabases()
     {
         $this->requireCpRequest();
@@ -48,9 +78,9 @@ class RemoteSyncController extends Controller
 
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listDatabases();
-            $options = RemoteFile::toHTMLOptions($remoteFiles, $settings->displayDateFormat);
+            $files = RemoteFile::serialize($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
-                "options" => $options,
+                "files" => $files,
                 "success" => true
             ]);
         } catch (\Exception $e) {
@@ -71,9 +101,9 @@ class RemoteSyncController extends Controller
         
         try {
             $remoteFiles = RemoteSync::getInstance()->provider->listVolumes();
-            $options = RemoteFile::toHTMLOptions($remoteFiles, $settings->displayDateFormat);
+            $files = RemoteFile::serialize($remoteFiles, $settings->displayDateFormat);
             return $this->asJson([
-                "options" => $options,
+                "files" => $files,
                 "success" => true
             ]);
         } catch (\Exception $e) {

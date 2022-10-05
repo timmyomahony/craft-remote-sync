@@ -7,7 +7,7 @@
 {% else %}
     {% if not isAuthenticated %}
         <div class="field">
-            <p class="warning"><strong>{{ 'You need to authenticate with your provider'|t('remote-sync') }}</strong></p>
+            <p class="warning"><strong>{{ 'You need to authenticate with your provider. Please visit the plugin settings page.'|t('remote-sync') }}</strong></p>
         </div>
     {% else %}
         {% if queueActive %}
@@ -30,10 +30,13 @@
             </script>
         {% endif %}
         <div class="rb-utilities">
+            <img class="rb-utilities-provider-icon" src="{{ craft.app.assetManager.publishedUrl('@weareferal/remotecore/assets/RemoteCoreUtility/dist/img/' ~ cloudProvider ~'.png', true) }}" />
             {% if not hideDatabases %}
                 {% include 'remote-sync/utilities/_includes/_remote-sync-section' with {
-                    label: 'Database',
-                    labelPlural: 'Databases',
+                    label: ("Database" | t),
+                    labelPlural: ("Databases" | t),
+                    pushText: ("Push Database" | t),
+                    pushTitle: ("This push your local database to your remote destination." | t),
                     pullMessage: ("Are you sure you want to pull & restore this database? This is destructive and will replace your local database. You will also be automatically logged out." | t),
                     deleteMessage: ("Are you sure you want to delete this remote database? This will not affect your local database" | t),
                     icon: 'database',
@@ -47,8 +50,10 @@
             {% endif %}
             {% if not hideVolumes %}
                 {% embed 'remote-sync/utilities/_includes/_remote-sync-section' with {
-                    label: 'Volumes',
-                    labelPlural: 'Volumes',
+                    label: ("Volume" | t),
+                    labelPlural: ("Volumes" | t),
+                    pushText: ("Push Volumes" | t),
+                    pushTitle: ("This push a copy of your volumes to your remote destination." | t),
                     pullMessage: ("Are you sure you want to pull & restore these volumes? This is destructive and will replace your local volumes." | t),
                     deleteMessage: ("Are you sure you want to delete these remote volumes? This will not affect your local volumes" | t),
                     icon: 'asset',

@@ -10,37 +10,61 @@
         data-push-action="{{ pushAction }}"
         data-pull-action="{{ pullAction }}"
         data-delete-action="{{ deleteAction }}">
+        <thead>
+            <tr>
+                <th>{{ "Date" | t("remote-backup") }}</th>
+                <th>{{ "Time" | t("remote-backup") }}</th>
+                <th>{{ "Environment" | t("remote-backup") }}</th>
+                <th>{{ "Version" | t("remote-backup") }}</th>
+                <th>{{ "Size" | t("remote-backup") }}</th>
+                <th></th>
+            </tr>
+        </thead>
         <tbody>
-            <tr class="first default-row template-row">
-                <td class="light"></td>
+            <tr class="default-row template-row">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td class="thin">
-                    <button class="btn small pull-button" title="{{ 'Pull and restore ' ~ label|lower|t }}">{{ 'Pull & Restore'|t }}</button>
-                </td>
-                <td class="thin">
+                    <button class="btn small pull-button" title="{{ 'Pull and restore ' ~ label|lower|t }}">{{ 'Restore'|t }}</button>
                     <button class="btn small delete-button" title="{{ 'Delete ' ~ label|lower|t }}">{{ 'Delete'|t }}</button>
                 </td>
             </tr>
             <tr class="default-row no-results-row">
-                <td class="light">
+                <td>
                     {{ "No " ~ labelPlural|t('remote-sync') }}
                 </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
             <tr class="default-row errors-row">
                 <td class="error">
                     {{ "Error Fetching " ~ labelPlural|t('remote-sync') }}
                 </td>
-            </tr>
-            <tr class="last default-row show-all-row">
-                <td>
-                    <a class="light" href="">{{ "Show All"|t('remote-sync') }}</a>
-                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
         </tbody>
     </table>
+    <div class="rb-show-all">
+        <a href="#">{{ "Show All"|t('remote-sync') }}</a>
+    </div>
     <form class="rb-utilities-form" method="post">
         {{ csrfInput() }}
         <div class='rb-utilities-submit'>
-            <input class="btn submit {{ not disabled ? '' : 'disabled' }}" type="submit" value="{{ 'Push ' ~ label|t('remote-sync') }}">
+            <input
+                class="btn submit {{ not disabled ? '' : 'disabled' }}"
+                type="submit"
+                value="{{ pushText }}"
+                title="{{ pushTitle }}">
             <div class="utility-status"></div>
         </div>
     </form>
