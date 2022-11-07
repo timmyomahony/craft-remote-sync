@@ -26,7 +26,7 @@ use weareferal\remotesync\models\Settings;
 use weareferal\remotesync\services\PruneService;
 
 use weareferal\remotecore\RemoteCoreHelper;
-use weareferal\remotecore\assets\remotecoresettings\RemoteCoreSettingsAsset;
+use weareferal\remotecore\assets\RemoteCoreSettings\RemoteCoreSettingsAsset;
 
 
 class RemoteSync extends Plugin
@@ -54,7 +54,7 @@ class RemoteSync extends Plugin
 
     /**
      * Register Permissions
-     * 
+     *
      */
     public function registerPermissions()
     {
@@ -76,7 +76,7 @@ class RemoteSync extends Plugin
 
     /**
      * Register URLs
-     * 
+     *
      */
     public function registerURLs()
     {
@@ -92,7 +92,7 @@ class RemoteSync extends Plugin
 
     /**
      * Register Console Controllers
-     * 
+     *
      */
     public function registerConsoleControllers()
     {
@@ -103,7 +103,7 @@ class RemoteSync extends Plugin
 
     /**
      * Register Services
-     * 
+     *
      */
     public function registerServices()
     {
@@ -115,7 +115,7 @@ class RemoteSync extends Plugin
 
     /**
      * Register Utilities
-     * 
+     *
      */
     public function registerUtilties()
     {
