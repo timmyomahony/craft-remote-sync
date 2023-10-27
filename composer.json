@@ -11,8 +11,8 @@
         "sync"
     ],
     "support": {
-        "docs": "https://github.com/weareferal/craft-remote-sync/blob/master/README.md",
-        "issues": "https://github.com/weareferal/craft-remote-sync/issues"
+        "docs": "https://craft-plugins.timmyomahony.com/remote-sync",
+        "issues": "https://github.com/timmyomahony/craft-remote-sync/issues"
     },
     "license": "proprietary",
     "authors": [
@@ -50,7 +50,7 @@
         "handle": "remote-sync",
         "hasCpSettings": true,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/weareferal/craft-remote-sync/master/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/timmyomahony/craft-remote-sync/master/CHANGELOG.md",
         "class": "weareferal\\remotesync\\RemoteSync"
     },
     "suggest": {
