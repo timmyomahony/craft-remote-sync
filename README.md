@@ -4,7 +4,7 @@
 
 📓 [**Documentation**](https://craft-plugins.timmyomahony.com/remote-sync) | 💳 [**Purchase**](https://plugins.craftcms.com/remote-sync?craft4) | 🤷🏻‍♂️ [**Get help**](https://craft-plugins.timmyomahony.com/remote-sync/docs/get-help)
 
-Remote Sync is a plugin for Craft CMS that helps you sync your database and assets across multiple Craft environments via cloud destinations like AWS, Digital Ocean & Backblaze.{% .lead %}
+Remote Sync is a plugin for Craft CMS that helps you sync your database and assets across multiple Craft environments via cloud destinations like AWS, Digital Ocean & Backblaze.
 
 This makes it easier to move from local development to staging and onto production and avoids the need to regularly SSH into servers to perform database dumps and restores.
 
@@ -20,8 +20,6 @@ Remote Sync also lets you automate the process via CLI commands:
 ./craft remote-sync/database/list
 ./craft remote-sync/database/delete ...
 ```
-
-Together with [cron](https://en.wikipedia.org/wiki/Cron) these commands can be used to automate your workflow.
 
 ## Features
 
