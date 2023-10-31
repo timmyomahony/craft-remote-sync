@@ -2,7 +2,7 @@
 
 ![Header image for plugin](https://craft-plugins-cdn.timmyomahony.com/website/remote-sync/remote-sync-plugin-header.png)
 
-📓 [**Documentation**](https://craft-plugins.timmyomahony.com/remote-sync?utm_source=github) | 💳 [**Purchase**](https://plugins.craftcms.com/remote-sync?craft4) | 🤷🏻‍♂️ [**Get help**](https://craft-plugins.timmyomahony.com/remote-sync/docs/get-help)
+📓 [**Documentation**](https://craft-plugins.timmyomahony.com/remote-sync?utm_source=github&utm_campaign=documentation-launch) | 💳 [**Purchase**](https://plugins.craftcms.com/remote-sync?craft4) | 🤷🏻‍♂️ [**Get help**](https://craft-plugins.timmyomahony.com/remote-sync/docs/get-help)
 
 Remote Sync is a plugin for Craft CMS that helps you sync your database and assets across multiple Craft environments via cloud destinations like AWS, Digital Ocean & Backblaze.
 
