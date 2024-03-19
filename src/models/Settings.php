@@ -7,6 +7,7 @@ use weareferal\remotecore\models\Settings as BaseSettings;
 
 class Settings extends BaseSettings
 {
+    public $disableRestore = false;
     public $keepEmergencyBackup = true;
     public $prune = false;
     public $pruneLimit = 10;
@@ -16,7 +17,7 @@ class Settings extends BaseSettings
         $rules = parent::rules();
         return $rules + [
             [
-                ['keepEmergencyBackup', 'prune'],
+                ['disableRestore', 'keepEmergencyBackup', 'prune'],
                 'boolean'
             ],
             [

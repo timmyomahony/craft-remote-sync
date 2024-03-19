@@ -24,9 +24,15 @@ return [
         'hideDatabases' => false,
 
         // Hide the volume sync panel on the utilities page
-        'hideVolumes' => false
+        'hideVolumes' => false,
+
+        // Enable pull and restore functionality
+        'disableRestore' => false,
     ],
     'dev' => [],
     'staging' => [],
-    'production' => [],
+    'production' => [
+        // Disable pull and restore only in production environment
+        'disableRestore' => true,
+    ],
 ];

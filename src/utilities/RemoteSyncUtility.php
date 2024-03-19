@@ -47,6 +47,7 @@ class RemoteSyncUtility extends Utility
             "hideDatabases" => $settings->hideDatabases,
             "hideVolumes" => $settings->hideVolumes,
             "haveVolumes" => !$settings->hideVolumes && $haveVolumes,
+            "disableRestore" => $settings->disableRestore,
             "queueActive" => $queueActive
         ]);
     }

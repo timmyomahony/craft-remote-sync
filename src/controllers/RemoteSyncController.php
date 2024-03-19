@@ -199,6 +199,10 @@ class RemoteSyncController extends Controller
         $plugin = RemoteSync::getInstance();
         $settings = $plugin->getSettings();
 
+        if ($settings->disableRestore) {
+            return $this->asErrorJson(Craft::t('remote-sync', 'Restore not enabled for this environment'));
+        }
+
         try {
             if ($settings->useQueue) {
                 Craft::$app->queue->push(new PullDatabaseJob([
@@ -230,6 +234,10 @@ class RemoteSyncController extends Controller
         $filename = Craft::$app->getRequest()->getRequiredBodyParam('filename');
         $plugin = RemoteSync::getInstance();
         $settings = $plugin->getSettings();
+
+        if ($settings->disableRestore) {
+            return $this->asErrorJson(Craft::t('remote-sync', 'Restore not enabled for this environment'));
+        }
 
         try {
             if ($settings->useQueue) {

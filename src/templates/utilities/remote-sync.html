@@ -45,6 +45,7 @@
                     pushAction: 'remote-sync/remote-sync/push-database',
                     pullAction: 'remote-sync/remote-sync/pull-database',
                     deleteAction: 'remote-sync/remote-sync/delete-database',
+                    disableRestore: disableRestore,
                     disabled: false
                 } %}
             {% endif %}
@@ -62,6 +63,7 @@
                     pushAction: 'remote-sync/remote-sync/push-volume',
                     pullAction: 'remote-sync/remote-sync/pull-volume',
                     deleteAction: 'remote-sync/remote-sync/delete-volume',
+                    disableRestore: disableRestore,
                     disabled: not haveVolumes
                 } %}
                     {% block message %}
