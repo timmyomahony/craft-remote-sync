@@ -123,6 +123,9 @@ class VolumeController extends Controller
             $this->requirePluginEnabled();
             $this->requirePluginConfigured();
             $startTime = microtime(true);
+            if (RemoteSync::getInstance()->getSettings()->disableRestore) {
+                throw new \Exception(Craft::t('remote-sync', 'Restore not enabled for this environment'));
+            }
             RemoteSync::getInstance()->provider->pullVolume($filename);
             $this->stdout("Pulled and restored remote volume:" . PHP_EOL, Console::FG_GREEN);
             $this->stdout("- " . $filename . PHP_EOL);
