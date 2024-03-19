@@ -26,7 +26,7 @@
         "weareferal/remote-core": "4.1.2"
     },
     "require-dev": {
-        "phpstan/phpstan": "1.8.x-dev",
+        "phpstan/phpstan": "1.11.x-dev",
         "craftcms/phpstan": "dev-main",
         "craftcms/rector": "dev-main"
     },
