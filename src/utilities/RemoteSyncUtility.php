@@ -21,7 +21,7 @@ class RemoteSyncUtility extends Utility
         return 'remote-sync';
     }
 
-    public static function iconPath(): string|null
+    public static function icon(): string|null
     {
         return RemoteSync::getInstance()->getBasePath() . DIRECTORY_SEPARATOR . 'utility-icon.svg';
     }
