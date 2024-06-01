@@ -21,12 +21,12 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^4.0.0",
+        "craftcms/cms": "^4.0.0|^5.0.0",
         "php": "^8.0.2",
-        "weareferal/remote-core": "4.1.2"
+        "weareferal/remote-core": "dev-craft-5"
     },
     "require-dev": {
-        "phpstan/phpstan": "1.8.x-dev",
+        "phpstan/phpstan": "1.11.x-dev",
         "craftcms/phpstan": "dev-main",
         "craftcms/rector": "dev-main"
     },
@@ -53,5 +53,16 @@
             "yiisoft/yii2-composer": true,
             "craftcms/plugin-installer": true
         }
-    }
+    },
+    "repositories": [
+      {
+        "type": "composer",
+        "url": "https://composer.craftcms.com",
+        "canonical": false
+      },
+      {
+        "type": "git",
+        "url": "https://github.com/tvd0x2a/craft-remote-core"
+      }
+    ]
 }
