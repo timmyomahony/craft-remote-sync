@@ -36,4 +36,14 @@
         errors: settings.getErrors('keepEmergencyBackup'),
         warning: configWarning('keepEmergencyBackup', 'remote-sync')
     }) }}
+
+    {{ forms.lightswitchField({
+        label: "Disable pull and restore"|t('remote-sync'),
+        instructions: "Disable pulling & restoring for this environment."|t('remote-sync'),
+        name: 'disableRestore',
+        id: 'disableRestore',
+        on: settings.disableRestore,
+        errors: settings.getErrors('disableRestore'),
+        warning: configWarning('disableRestore', 'remote-sync')
+    }) }}
 {% endblock %}
