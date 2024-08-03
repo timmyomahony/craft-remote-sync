@@ -1,11 +1,11 @@
 {
     "pluginName": "Crate Remote Sync",
     "pluginDescription": "Sync your database and assets across Craft environments",
-    "pluginVersion": "1.0.0",
+    "pluginVersion": "5.0.0",
     "pluginAuthorName": "Timmy O'Mahony",
     "pluginVendorName": "weareferal",
-    "pluginAuthorUrl": "https://weareferal.com",
-    "pluginAuthorGithub": "weareferal",
+    "pluginAuthorUrl": "https://craft-plugins.timmyomahony.com/remote-sync",
+    "pluginAuthorGithub": "timmyomahony.com",
     "codeComments": "yes",
     "pluginComponents": [
         "controllers",
